@@ -11,10 +11,10 @@ type Character struct {
 	Inventaire [][]string
 }
 
-// Persos globaux
 var C1 Character
 var C2 Character
 var C3 Character
+var equipe [3]Character 
 
 func initCharacter(nom string, classe string, lvl int, PVMax int, inventaire [][]string) Character {
 	return Character{
@@ -38,18 +38,23 @@ func displayInfo() {
 	fmt.Printf("║ PV     : %d/%-4d║  ║ PV     : %d/%-4d║  ║ PV     : %d/%-4d║\n",
 		C1.PVActuels, C1.PVMax, C2.PVActuels, C2.PVMax, C3.PVActuels, C3.PVMax)
 	fmt.Println("╚══════════════════╝  ╚══════════════════╝  ╚══════════════════╝")
-	fmt.Println("")
+}
+func accessInventory() {
 	fmt.Println("		  	  INVENTAIRES")
-	fmt.Println("╔══════════════════╗  ╔══════════════════╗  ╔══════════════════╗")
-	fmt.Printf("║     %-8s     ║  ║	      %-8s   ║  ║	    %-8s   ║\n",
-		C1.Nom, C2.Nom, C3.Nom)
-	fmt.Println("╚══════════════════╝  ╚══════════════════╝  ╚══════════════════╝")
+	for _, r := range equipe {
+		fmt.Printf("║%-8s : ", r.Nom)
+		for _, item := range r.Inventaire {
+			fmt.Printf("%sx %s, ", item[0], item[1])
+		}
+		fmt.Println("║")
+	}
 }
 
 func main() {
 	C1 = initCharacter("Yanisse", "Golem", 1, 200, [][]string{{"3", "Potion de Vie"}})
 	C2 = initCharacter("Léo", "Sage", 1, 100, [][]string{{"3", "Potion de Vie"}})
 	C3 = initCharacter("Luka", "Assassin", 1, 100, [][]string{{"3", "Potion de Vie"}})
-
+	equipe	= [3]Character{C1, C2, C3}
 	displayInfo()
+	accessInventory()
 }
