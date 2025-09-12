@@ -10,4 +10,7 @@ type Character struct{
 func initCharacter(nom string, classe string) Character {
 	return var Character = Character{nom, Classe, 1, 100, 100, [[3,"Potion de Vie"]]}
 }
-	
+
+func main () {
+	C1 = initCharacter("yanisse","golem")
+}
