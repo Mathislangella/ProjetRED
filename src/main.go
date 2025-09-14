@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"os/exec"
+)
 
 // Tout les struct
 type statistiques struct {
@@ -51,7 +55,7 @@ func Menu(char *Character) {
 		displayInfo(char)
 	case 2:
 		accessInventory(char)
-	case 3:
+	case 0:
 		return
 	default:
 		fmt.Print("Mauvais Choix")
@@ -62,7 +66,7 @@ func displayInfo(char *Character) {
 	fmt.Println("╔══════════════════╗")
 	fmt.Printf("║ Nom    : %-8s║\n", char.Nom)
 	fmt.Printf("║ Classe : %-8s║ \n", char.Classe)
-	fmt.Printf("║ Niveau : %-8d║║\n", char.Niveau.Lvl)
+	fmt.Printf("║ Niveau : %-8d║\n", char.Niveau.Lvl)
 	fmt.Printf("║ Exp    : %-8d║\n", char.Niveau.Exp)
 	fmt.Printf("║ PV     : %d/%-4d║\n", char.Stats.PVActuels, char.Stats.PVMax)
 	fmt.Println("╚══════════════════╝")
@@ -110,13 +114,35 @@ func takePot(char *Character) {
 	fmt.Println(char.Nom, "N'as pas de Potion de Vie")
 }
 
+func addPV(char *Character, nb int) {
+	char.Stats.PVActuels += nb
+}
+
+func lessPV(char *Character, nb int) {
+	char.Stats.PVActuels -= nb
+}
+func isDead(char *Character) {
+	return
+} 
+//╔══╦══╗
+//║  ║  ║
+//╠══╬══╣
+//║  ║  ║
+//╚══╩══╝
 func Marchand(char *Character) {
-	fmt.Println("Marchand : Bienvenu dans ma boutique")
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
+	cmd.Run()
+	fmt.Println("Marchand : Bienvenu dans ma boutique.")
+	fmt.Println("")
+	fmt.Println("╔══════╦════╦════════╦══════════════════════════════════════")
+	fmt.Printf("║index ║Prix║Quantite║Object\n")
+	fmt.Println("╠══════╬════╬════════╬══════════════════════════════════════")
 	var marchandInventaire = []Item{
 		{Nom: "Potion de Vie", Quantite: 1, Prix: 0},
 	}
 	for i, item := range marchandInventaire {
-		fmt.Printf("%d. |%d| |%d| %s\n", i+1, item.Prix, item.Quantite, item.Nom)
+		fmt.Printf("║%d.    ║%d   ║%d       ║%s\n", i+1, item.Prix, item.Quantite, item.Nom)
 	}
 	fmt.Println("0. Quitter le Marchand")
 	var choix int
