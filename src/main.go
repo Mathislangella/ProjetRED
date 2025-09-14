@@ -2,21 +2,46 @@ package main
 
 import "fmt"
 
+type Item struct {
+	Nom      string
+	Quantite int
+}
+
 type Character struct {
 	Nom        string
 	Classe     string
 	Lvl        int
 	PVMax      int
 	PVActuels  int
-	Inventaire [][]string
+	Inventaire []Item
 }
 
 var C1 Character
 var C2 Character
 var C3 Character
-var equipe [3]Character 
+var equipe [3]Character
 
-func initCharacter(nom string, classe string, lvl int, PVMax int, inventaire [][]string) Character {
+func Menu() {
+	fmt.Println("Menu Du Jeu")
+	fmt.Println("1. Ouvrir Info Personnages")
+	fmt.Println("2. Ouvrir Inventaire")
+	fmt.Println("3. Quitter Menu")
+	fmt.Print("Votre Choix : ")
+	var choice int
+	fmt.Scan(&choice)
+	switch choice {
+	case 1:
+		displayInfo()
+	case 2:
+		accessInventory()
+	case 3:
+		return
+	default:
+		fmt.Print("Mauvais Choix")
+	}
+}
+
+func initCharacter(nom string, classe string, lvl int, PVMax int, inventaire []Item) Character {
 	return Character{
 		Nom:        nom,
 		Classe:     classe,
@@ -44,17 +69,16 @@ func accessInventory() {
 	for _, r := range equipe {
 		fmt.Printf("║%-8s : ", r.Nom)
 		for _, item := range r.Inventaire {
-			fmt.Printf("%sx %s, ", item[0], item[1])
+			fmt.Printf("%d %s ", item.Quantite, item.Nom)
 		}
 		fmt.Println("║")
 	}
 }
 
 func main() {
-	C1 = initCharacter("Yanisse", "Golem", 1, 200, [][]string{{"3", "Potion de Vie"}})
-	C2 = initCharacter("Léo", "Sage", 1, 100, [][]string{{"3", "Potion de Vie"}})
-	C3 = initCharacter("Luka", "Assassin", 1, 100, [][]string{{"3", "Potion de Vie"}})
-	equipe	= [3]Character{C1, C2, C3}
-	displayInfo()
-	accessInventory()
+	C1 = initCharacter("Yanisse", "Golem", 1, 200, []Item{{Nom: "Potion de Vie", Quantite: 3}})
+	C2 = initCharacter("Léo", "Sage", 1, 100, []Item{{Nom: "Potion de Vie", Quantite: 3}})
+	C3 = initCharacter("Luka", "Assassin", 1, 100, []Item{{Nom: "Potion de Vie", Quantite: 3}})
+	equipe = [3]Character{C1, C2, C3}
+	Menu()
 }
