@@ -43,23 +43,15 @@ type Character struct {
 }
 
 // toute les fonction
-<<<<<<< HEAD
-func initCharacter(nom string, classe string, LvL Level, PVMax int, inventaire []Item) Character {
 
-=======
 func initCharacter(nom string, classe string, LvL Level, PVMax int, Nb_vie int, sorts []Skill, inventaire []Item) Character {
->>>>>>> Luka_branch
 	return Character{
 		Nom:        nom,
 		Classe:     classe,
 		Niveau:     LvL,
-<<<<<<< HEAD
 		Stats:      statistiques{PVActuels: PVMax / 2, PVMax: PVMax},
-=======
-		Stats:      statistiques{PVActuels: PVMax, PVMax: PVMax},
 		Nb_vie:     Nb_vie,
 		Sorts:      sorts,
->>>>>>> Luka_branch
 		Inventaire: inventaire,
 		Argent:     100,
 	}
@@ -95,7 +87,7 @@ func characterCreation() Character {
 		characterCreation()
 	}
 	clear()
-	return initCharacter(nom, classe, Level{1, 0}, pv, []Item{{Nom: "Potion de Vie", Quantite: 3}})
+	return initCharacter(nom, classe, Level{1, 0}, pv, 1, []Skill{{Nom: "Coup de Poign", Degats: 5, Mana: 0}}, []Item{{Nom: "Potion de Vie", Quantite: 3}})
 }
 
 func Menu(char *Character, marchand *[]Item) {
@@ -207,9 +199,6 @@ func lessPV(char *Character, nb int) {
 	char.Stats.PVActuels -= nb
 }
 func isDead(char *Character) {
-<<<<<<< HEAD
-	return
-=======
 	if char.Stats.PVActuels == 0 {
 		if char.Nb_vie > 0 {
 			fmt.Println("1. Ressurection")
@@ -231,7 +220,7 @@ func isDead(char *Character) {
 			fmt.Println(char.Nom, "est mort")
 		}
 	}
->>>>>>> Luka_branch
+	return
 }
 
 // ╔══╦══╗
@@ -239,7 +228,6 @@ func isDead(char *Character) {
 // ╠══╬══╣
 // ║  ║  ║
 // ╚══╩══╝
-<<<<<<< HEAD
 func Marchand(char *Character, shop *[]Item) {
 	clear()
 	fmt.Println("Marchand : Bienvenu dans ma boutique.")
@@ -277,35 +265,17 @@ func Marchand(char *Character, shop *[]Item) {
 		Marchand(char, shop)
 	}
 }
+
 func clear() {
-=======
-func Marchand(char *Character) {
->>>>>>> Luka_branch
 	cmd := exec.Command("clear")
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 }
 
-func spellbook(char *Character, Skil *Skill) {
-	state := false
-	for i := range char.Sorts {
-		if char.Sorts[i].Nom == Skil.Nom {
-			state = true
-		}
-	}
-	if state == false {
-		char.Sorts = append(char.Sorts, *Skil)
-	}
-}
-
 // Fonction Main
 func main() {
 	// Initialisation des personnages
-<<<<<<< HEAD
 	C1 := characterCreation()
-=======
-	C1 := initCharacter("Yanisse", "Golem", Level{1, 0}, 0, 2, []Skill{{Nom: "Coup de Poign", Degats: 5, Mana: 0}}, []Item{{Nom: "Potion de Vie", Quantite: 3}})
->>>>>>> Luka_branch
 	var Perso *Character = &C1
 	var marchandInventory = []Item{
 		{Nom: "Potion de Vie", Quantite: 1, Prix: 3},
@@ -318,9 +288,6 @@ func main() {
 	}
 	var marchandstuf *[]Item = &marchandInventory
 	// lancement du jeu
-<<<<<<< HEAD
 	Menu(Perso, marchandstuf)
-=======
 	isDead(Perso)
->>>>>>> Luka_branch
 }
