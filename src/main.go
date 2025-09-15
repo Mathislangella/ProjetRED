@@ -197,7 +197,9 @@ func addPV(char *Character, nb int) {
 
 func lessPV(char *Character, nb int) {
 	char.Stats.PVActuels -= nb
+	isDead(char)
 }
+
 func isDead(char *Character) {
 	if char.Stats.PVActuels == 0 {
 		if char.Nb_vie > 0 {
@@ -220,7 +222,6 @@ func isDead(char *Character) {
 			fmt.Println(char.Nom, "est mort")
 		}
 	}
-	return
 }
 
 // ╔══╦══╗
@@ -279,7 +280,7 @@ func main() {
 	var Perso *Character = &C1
 	var marchandInventory = []Item{
 		{Nom: "Potion de Vie", Quantite: 1, Prix: 3},
-		{Nom: "Potion de poison", Quantite: 1, Prix: 6},
+		{Nom: "Potion de poison", Quantite: 10, Prix: 6},
 		{Nom: "Livre de Sort", Quantite: 1, Prix: 25},
 		{Nom: "Fourrure de Loup", Quantite: 1, Prix: 4},
 		{Nom: "Peau de Troll", Quantite: 1, Prix: 7},
@@ -289,5 +290,4 @@ func main() {
 	var marchandstuf *[]Item = &marchandInventory
 	// lancement du jeu
 	Menu(Perso, marchandstuf)
-	isDead(Perso)
 }
