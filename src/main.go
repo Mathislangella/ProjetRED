@@ -198,30 +198,54 @@ func poisonPot(char *Character) {
 	}
 	fmt.Println(char.Nom, "N'as pas de Potion de Poison")
 }
-// ...existing code...
 
 func isInventoryFull(char *Character) bool {
-    return len(char.Inventaire) >= 10
+	return len(char.Inventaire) >= 10
+}
+
+func InventoryFull(char *Character, newItem Item) bool {
+	if isInventoryFull(char) {
+		fmt.Println("Inventaire plein ! Voulez-vous remplacer un objet ? (o/n)")
+		var rep string
+		fmt.Scan(&rep)
+		if strings.ToLower(rep) == "o" {
+			fmt.Println("Voici vos objets :")
+			for i, item := range char.Inventaire {
+				fmt.Printf("%d. %s (x%d)\n", i+1, item.Nom, item.Quantite)
+			}
+			fmt.Print("Selectionnez le numéro de l'objet à remplacer : ")
+			var choix string
+			fmt.Scan(&choix)
+			idx, err := strconv.Atoi(choix)
+			if err != nil || idx < 1 || idx > len(char.Inventaire) {
+				fmt.Println("Choix invalide.")
+				return true
+			}
+			char.Inventaire[idx-1] = newItem
+			fmt.Printf("L'objet a été remplacé par %s.\n", newItem.Nom)
+		}
+		return true
+	}
+	return false
 }
 
 func addtoInventory(char *Character, item Item, nb int) {
-    if isInventoryFull(char) {
-        fmt.Println("Inventaire plein ! Impossible d'ajouter un nouvel objet.")
-        return
-    }
-    etat := false
-    for i, r := range char.Inventaire {
-        if r.Nom == item.Nom {
-            char.Inventaire[i].Quantite += nb
-            etat = true
-        }
-    }
-    if !etat {
-        char.Inventaire = append(char.Inventaire, Item{Nom: item.Nom, Quantite: nb})
-    }
+	if isInventoryFull(char) {
+		fmt.Println("Inventaire plein ! Impossible d'ajouter un nouvel objet.")
+		return
+	}
+	etat := false
+	for i, r := range char.Inventaire {
+		if r.Nom == item.Nom {
+			char.Inventaire[i].Quantite += nb
+			etat = true
+		}
+	}
+	if !etat {
+		char.Inventaire = append(char.Inventaire, Item{Nom: item.Nom, Quantite: nb})
+	}
 }
 
-// ...existing code...
 func addPV(char *Character, nb int) {
 	char.Stats.PVActuels += nb
 	if char.Stats.PVActuels > char.Stats.PVMax {
@@ -306,6 +330,7 @@ func clear() {
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 }
+func upgradeInventorySlot(char *Character) {
 
 // Fonction Main
 func main() {
