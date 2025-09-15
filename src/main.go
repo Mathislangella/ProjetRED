@@ -23,21 +23,29 @@ type Item struct {
 	Prix     int
 }
 
+type Skill struct {
+	Nom    string
+	Degats int
+	Mana   int
+}
+
 type Character struct {
 	Nom        string
 	Classe     string
 	Niveau     Level
 	Stats      statistiques
+	Sorts      []Skill
 	Inventaire []Item
 }
 
 // toute les fonction
-func initCharacter(nom string, classe string, LvL Level, PVMax int, inventaire []Item) Character {
+func initCharacter(nom string, classe string, LvL Level, PVMax int, sorts []Skill, inventaire []Item) Character {
 	return Character{
 		Nom:        nom,
 		Classe:     classe,
 		Niveau:     LvL,
 		Stats:      statistiques{PVActuels: PVMax, PVMax: PVMax},
+		Sorts:      sorts,
 		Inventaire: inventaire,
 	}
 }
@@ -122,13 +130,13 @@ func lessPV(char *Character, nb int) {
 	char.Stats.PVActuels -= nb
 }
 func isDead(char *Character) {
-	return
-} 
-//╔══╦══╗
-//║  ║  ║
-//╠══╬══╣
-//║  ║  ║
-//╚══╩══╝
+}
+
+// ╔══╦══╗
+// ║  ║  ║
+// ╠══╬══╣
+// ║  ║  ║
+// ╚══╩══╝
 func Marchand(char *Character) {
 	cmd := exec.Command("clear")
 	cmd.Stdout = os.Stdout
@@ -153,7 +161,7 @@ func Marchand(char *Character) {
 // Fonction Main
 func main() {
 	// Initialisation des personnages
-	C1 := initCharacter("Yanisse", "Golem", Level{1, 0}, 200, []Item{{Nom: "Potion de Vie", Quantite: 3}})
+	C1 := initCharacter("Yanisse", "Golem", Level{1, 0}, 200, []Skill{{Nom: "Coup de Poign", Degats: 5, Mana: 0}}, []Item{{Nom: "Potion de Vie", Quantite: 3}})
 	var Perso *Character = &C1
 	// lancement du jeu
 	Menu(Perso)
