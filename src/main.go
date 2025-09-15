@@ -33,28 +33,30 @@ type Skill struct {
 }
 
 type Character struct {
-	Nom        string
-	Classe     string
-	Niveau     Level
-	Stats      statistiques
-	Nb_vie     int
-	Sorts      []Skill
-	Inventaire []Item
-	Argent     int
+	Nom          string
+	Classe       string
+	Niveau       Level
+	Stats        statistiques
+	Nb_vie       int
+	Sorts        []Skill
+	Inventaire   []Item
+	InventoryMax int
+	Argent       int
 }
 
 // toute les fonction
 
 func initCharacter(nom string, classe string, LvL Level, PVMax int, Nb_vie int, sorts []Skill, inventaire []Item) Character {
 	return Character{
-		Nom:        nom,
-		Classe:     classe,
-		Niveau:     LvL,
-		Stats:      statistiques{PVActuels: PVMax / 2, PVMax: PVMax},
-		Nb_vie:     Nb_vie,
-		Sorts:      sorts,
-		Inventaire: inventaire,
-		Argent:     100,
+		Nom:          nom,
+		Classe:       classe,
+		Niveau:       LvL,
+		Stats:        statistiques{PVActuels: PVMax / 2, PVMax: PVMax},
+		Nb_vie:       Nb_vie,
+		Sorts:        sorts,
+		Inventaire:   inventaire,
+		InventoryMax: 10,
+		Argent:       100,
 	}
 }
 
@@ -200,7 +202,7 @@ func poisonPot(char *Character) {
 }
 
 func isInventoryFull(char *Character) bool {
-	return len(char.Inventaire) >= 10
+	return len(char.Inventaire) >= char.InventoryMax
 }
 
 func InventoryFull(char *Character, newItem Item) bool {
@@ -330,7 +332,17 @@ func clear() {
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 }
+
 func upgradeInventorySlot(char *Character) {
+	if char.Argent >= 20 {
+		char.Argent -= 20
+		char.InventoryMax += 5 // ← augmente la limite
+		fmt.Printf("Inventaire agrandi à %d emplacements.\n", char.InventoryMax)
+	} else {
+		fmt.Println("Vous n'avez pas assez d'argent pour agrandir votre inventaire.")
+		fmt.Printf("Il vous manque %d pièces d'or.\n", 20-char.Argent)
+	}
+}
 
 // Fonction Main
 func main() {
