@@ -34,17 +34,19 @@ type Character struct {
 	Classe     string
 	Niveau     Level
 	Stats      statistiques
+	Nb_vie     int
 	Sorts      []Skill
 	Inventaire []Item
 }
 
 // toute les fonction
-func initCharacter(nom string, classe string, LvL Level, PVMax int, sorts []Skill, inventaire []Item) Character {
+func initCharacter(nom string, classe string, LvL Level, PVMax int, Nb_vie int, sorts []Skill, inventaire []Item) Character {
 	return Character{
 		Nom:        nom,
 		Classe:     classe,
 		Niveau:     LvL,
 		Stats:      statistiques{PVActuels: PVMax, PVMax: PVMax},
+		Nb_vie:     Nb_vie,
 		Sorts:      sorts,
 		Inventaire: inventaire,
 	}
@@ -130,6 +132,27 @@ func lessPV(char *Character, nb int) {
 	char.Stats.PVActuels -= nb
 }
 func isDead(char *Character) {
+	if char.Stats.PVActuels == 0 {
+		if char.Nb_vie > 0 {
+			fmt.Println("1. Ressurection")
+			fmt.Println("2. Quitter Le Jeu")
+			var choice string
+			fmt.Scan(&choice)
+			switch choice {
+			case "1":
+				addPV(char, char.Stats.PVMax/2)
+				fmt.Printf("%s gagne %d points de vie", char.Nom, char.Stats.PVMax/2)
+				fmt.Printf(": %d/%d", char.Stats.PVActuels, char.Stats.PVMax)
+				char.Nb_vie--
+				return
+			case "2":
+				os.Exit(0)
+			}
+		}
+		if char.Nb_vie == 0 {
+			fmt.Println(char.Nom, "est mort")
+		}
+	}
 }
 
 // ╔══╦══╗
@@ -158,11 +181,23 @@ func Marchand(char *Character) {
 	fmt.Scan(&choix)
 }
 
+func spellbook(char *Character, Skil *Skill) {
+	state := false
+	for i := range char.Sorts {
+		if char.Sorts[i].Nom == Skil.Nom {
+			state = true
+		}
+	}
+	if state == false {
+		char.Sorts = append(char.Sorts, *Skil)
+	}
+}
+
 // Fonction Main
 func main() {
 	// Initialisation des personnages
-	C1 := initCharacter("Yanisse", "Golem", Level{1, 0}, 200, []Skill{{Nom: "Coup de Poign", Degats: 5, Mana: 0}}, []Item{{Nom: "Potion de Vie", Quantite: 3}})
+	C1 := initCharacter("Yanisse", "Golem", Level{1, 0}, 0, 2, []Skill{{Nom: "Coup de Poign", Degats: 5, Mana: 0}}, []Item{{Nom: "Potion de Vie", Quantite: 3}})
 	var Perso *Character = &C1
 	// lancement du jeu
-	Menu(Perso)
+	isDead(Perso)
 }
