@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 )
 
 // Tout les struct
@@ -30,6 +31,7 @@ type Character struct {
 	Niveau     Level
 	Stats      statistiques
 	Inventaire []Item
+	Argent     int
 }
 
 // toute les fonction
@@ -39,12 +41,46 @@ func initCharacter(nom string, classe string, LvL Level, PVMax int, inventaire [
 		Nom:        nom,
 		Classe:     classe,
 		Niveau:     LvL,
-		Stats:      statistiques{PVActuels: PVMax, PVMax: PVMax},
+		Stats:      statistiques{PVActuels: PVMax / 2, PVMax: PVMax},
 		Inventaire: inventaire,
+		Argent:     100,
 	}
 }
 
-func Menu(char *Character) {
+func characterCreation() Character {
+	clear()
+	fmt.Println("Quel est votre nom :")
+	var nom string
+	fmt.Scan(&nom)
+	nom = strings.ToLower(nom)
+	nom0 := strings.Split(nom, "")
+	nom0[0] = strings.ToUpper((string(nom[0])))
+	nom = strings.Join(nom0, "")
+	fmt.Println("Quel est votre Classe choisissez |1. Humain|2. Elf|3. Nain")
+	var choi string
+	fmt.Scan(&choi)
+	var classe string
+	var pv int
+	switch choi {
+	case "1":
+		classe = "Humain"
+		pv = 100
+	case "2":
+		classe = "Elf"
+		pv = 80
+	case "3":
+		classe = "Nain"
+		pv = 120
+	default:
+		fmt.Printf("Pour choisir votre choisisez 1 ,2 ou 3")
+		clear()
+		characterCreation()
+	}
+	clear()
+	return initCharacter(nom, classe, Level{1, 0}, pv, []Item{{Nom: "Potion de Vie", Quantite: 3}})
+}
+
+func Menu(char *Character, marchand *[]Item) {
 	fmt.Println("Menu Du Jeu")
 	fmt.Println("1. Ouvrir Info Personnages")
 	fmt.Println("2. Ouvrir Inventaire")
@@ -55,36 +91,43 @@ func Menu(char *Character) {
 	switch choice {
 	case "1":
 		displayInfo(char)
-		Menu(char)
+		Menu(char, marchand)
 	case "2":
-		accessInventory(char)
-		Menu(char)
+		clear()
+		accessInventory(char, marchand)
+		clear()
+		Menu(char, marchand)
 	case "0":
 		return
 	default:
 		fmt.Println("Mauvais Choix")
 		fmt.Println("")
-		Menu(char)
+		clear()
+		Menu(char, marchand)
 	}
 }
 
 func displayInfo(char *Character) {
+	clear()
 	fmt.Println("╔══════════════════╗")
-	fmt.Printf("║ Nom    : %s║\n", char.Nom)
-	fmt.Printf("║ Classe : %s║ \n", char.Classe)
-	fmt.Printf("║ Niveau : %d║\n", char.Niveau.Lvl)
-	fmt.Printf("║ Exp    : %d║\n", char.Niveau.Exp)
-	fmt.Printf("║ PV     : %d/%d║\n", char.Stats.PVActuels, char.Stats.PVMax)
+	fmt.Printf("║ Nom    : %-8s║\n", char.Nom)
+	fmt.Printf("║ Classe : %-8s║ \n", char.Classe)
+	fmt.Printf("║ Niveau : %-8d║\n", char.Niveau.Lvl)
+	fmt.Printf("║ Exp    : %-8d║\n", char.Niveau.Exp)
+	fmt.Printf("║ PV     : %d/%-5d║\n", char.Stats.PVActuels, char.Stats.PVMax)
+	fmt.Printf("║ OR     : %-8d║\n", char.Argent)
 	fmt.Println("╚══════════════════╝")
 }
 
-func accessInventory(char *Character) {
+func accessInventory(char *Character, marchand *[]Item) {
 	fmt.Println("		  	  INVENTAIRES")
-	fmt.Printf("║%-8s : ", char.Nom)
-	for _, item := range char.Inventaire {
-		fmt.Printf("%d %s ,", item.Quantite, item.Nom)
+	fmt.Printf("Vous avez %d Pieces d'or\n", char.Argent)
+	for i, item := range char.Inventaire {
+		fmt.Printf("║%-4d : ", i)
+		fmt.Printf("%d %-10s ,", item.Quantite, item.Nom)
+		fmt.Println("║")
 	}
-	fmt.Println("║")
+	fmt.Println("")
 	fmt.Println("1. Utiliser Potion de Vie")
 	fmt.Println("2. Aller voir le Marchand")
 	fmt.Println("0. Quitter Menu")
@@ -93,26 +136,30 @@ func accessInventory(char *Character) {
 	switch action {
 	case "1":
 		takePot(char)
-		accessInventory(char)
+		accessInventory(char, marchand)
 	case "2":
-		Marchand(char)
-		accessInventory(char)
+		Marchand(char, marchand)
+		clear()
+		accessInventory(char, marchand)
 	case "0":
 		return
 	default:
 		fmt.Println("Mauvais Choix")
 		fmt.Println("")
-		accessInventory(char)
+		accessInventory(char, marchand)
 	}
 }
 
 func addtoInventory(char *Character, item Item, nb int) {
+	etat := false
 	for i, r := range char.Inventaire {
 		if r.Nom == item.Nom {
 			char.Inventaire[i].Quantite += nb
-		} else {
-			char.Inventaire = append(char.Inventaire, Item{Nom: item.Nom, Quantite: nb})
+			etat = true
 		}
+	}
+	if etat == false {
+		char.Inventaire = append(char.Inventaire, Item{Nom: item.Nom, Quantite: nb})
 	}
 }
 
@@ -150,22 +197,17 @@ func isDead(char *Character) {
 // ╠══╬══╣
 // ║  ║  ║
 // ╚══╩══╝
-func Marchand(char *Character) {
-	cmd := exec.Command("clear")
-	cmd.Stdout = os.Stdout
-	cmd.Run()
+func Marchand(char *Character, shop *[]Item) {
+	clear()
 	fmt.Println("Marchand : Bienvenu dans ma boutique.")
 	fmt.Println("")
-	fmt.Println("╔══════╦════╦════════╦══════════════════════════════════════")
-	fmt.Printf("║index ║Prix║Quantite║Object\n")
-	fmt.Println("╠══════╬════╬════════╬══════════════════════════════════════")
-	// inventaire du marchand
-	var marchandInventaire = []Item{
-		{Nom: "Potion de Vie", Quantite: 1, Prix: 0},
+	fmt.Println("╔══════╦════╦════════╦══════════════════════════════════════╗")
+	fmt.Printf("║index ║Prix║Quantite║Object                                ║\n")
+	fmt.Println("╠══════╬════╬════════╬══════════════════════════════════════╣")
+	for i, item := range *shop {
+		fmt.Printf("║%d.    ║%-4d║%-8d║%-38s║\n", i+1, item.Prix, item.Quantite, item.Nom)
 	}
-	for i, item := range marchandInventaire {
-		fmt.Printf("║%d.    ║%d   ║%d       ║%s\n", i+1, item.Prix, item.Quantite, item.Nom)
-	}
+	fmt.Println("╚══════╩════╩════════╩══════════════════════════════════════╝")
 	fmt.Println("0. Quitter le Marchand")
 	fmt.Print("Marchand : Que voulais vous acheter ? ")
 	var choix string
@@ -174,30 +216,45 @@ func Marchand(char *Character) {
 	if err == nil {
 		fmt.Print(err)
 	}
-	if intchoix > 0 && intchoix <= len(marchandInventaire) {
-		if marchandInventaire[intchoix-1].Quantite > 0 {
-			addtoInventory(char, marchandInventaire[intchoix-1], 1)
-			marchandInventaire[intchoix-1].Quantite--
+	if intchoix > 0 && intchoix <= len(*shop) {
+		if (*shop)[intchoix-1].Quantite > 0 {
+			addtoInventory(char, (*shop)[intchoix-1], 1)
+			(*shop)[intchoix-1].Quantite -= 1
+			fmt.Println("Marchand : Merci de votre achat")
+			Marchand(char, shop)
 		} else {
 			fmt.Println("Marchand : Vous ne pouvez pas acheter cet objet car soit il n y en a plus en stock soit votre sac a dos est plein")
-			Marchand((char))
+			Marchand(char, shop)
 		}
-
 	} else if intchoix == 0 {
 		fmt.Println("Vous quittez la boutique du marchand")
 	} else {
 		fmt.Println("Mauvais Choix")
 		fmt.Println("")
-		Marchand(char)
+		Marchand(char, shop)
 	}
+}
+func clear() {
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }
 
 // Fonction Main
 func main() {
 	// Initialisation des personnages
-	C1 := initCharacter("Yanisse", "Golem", Level{1, 0}, 200, []Item{{Nom: "Potion de Vie", Quantite: 3}})
+	C1 := characterCreation()
 	var Perso *Character = &C1
-
+	var marchandInventory = []Item{
+		{Nom: "Potion de Vie", Quantite: 1, Prix: 3},
+		{Nom: "Potion de poison", Quantite: 1, Prix: 6},
+		{Nom: "Livre de Sort", Quantite: 1, Prix: 25},
+		{Nom: "Fourrure de Loup", Quantite: 1, Prix: 4},
+		{Nom: "Peau de Troll", Quantite: 1, Prix: 7},
+		{Nom: "Cuir de Sanglier", Quantite: 1, Prix: 3},
+		{Nom: "Plume de Corbeau", Quantite: 1, Prix: 1},
+	}
+	var marchandstuf *[]Item = &marchandInventory
 	// lancement du jeu
-	Menu(Perso)
+	Menu(Perso, marchandstuf)
 }
