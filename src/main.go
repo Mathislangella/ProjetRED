@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Tout les struct
@@ -139,7 +140,8 @@ func accessInventory(char *Character, marchand *[]Item) {
 	}
 	fmt.Println("")
 	fmt.Println("1. Utiliser Potion de Vie")
-	fmt.Println("2. Aller voir le Marchand")
+	fmt.Println("2. Utiliser Potion de Poison")
+	fmt.Println("3. Aller voir le Marchand")
 	fmt.Println("0. Quitter Menu")
 	var action string
 	fmt.Scan(&action)
@@ -148,6 +150,9 @@ func accessInventory(char *Character, marchand *[]Item) {
 		takePot(char)
 		accessInventory(char, marchand)
 	case "2":
+		poisonPot(char)
+		accessInventory(char, marchand)
+	case "3":
 		Marchand(char, marchand)
 		clear()
 		accessInventory(char, marchand)
@@ -157,19 +162,6 @@ func accessInventory(char *Character, marchand *[]Item) {
 		fmt.Println("Mauvais Choix")
 		fmt.Println("")
 		accessInventory(char, marchand)
-	}
-}
-
-func addtoInventory(char *Character, item Item, nb int) {
-	etat := false
-	for i, r := range char.Inventaire {
-		if r.Nom == item.Nom {
-			char.Inventaire[i].Quantite += nb
-			etat = true
-		}
-	}
-	if etat == false {
-		char.Inventaire = append(char.Inventaire, Item{Nom: item.Nom, Quantite: nb})
 	}
 }
 
@@ -188,6 +180,48 @@ func takePot(char *Character) {
 	fmt.Println(char.Nom, "N'as pas de Potion de Vie")
 }
 
+func poisonPot(char *Character) {
+	for i := range char.Inventaire {
+		if char.Inventaire[i].Nom == "Potion de Poison" && char.Inventaire[i].Quantite > 0 {
+			char.Inventaire[i].Quantite--
+			for range 3 {
+				lessPV(char, 10)
+				fmt.Printf("%s subit du poison ! PV restants : %d/%d\n", char.Nom, char.Stats.PVActuels, char.Stats.PVMax)
+				time.Sleep(1 * time.Second)
+			}
+			if char.Stats.PVActuels <= 0 {
+				char.Stats.PVActuels = 0
+				fmt.Println(char.Nom, "est KO à cause du poison !")
+			}
+			return
+		}
+	}
+	fmt.Println(char.Nom, "N'as pas de Potion de Poison")
+}
+// ...existing code...
+
+func isInventoryFull(char *Character) bool {
+    return len(char.Inventaire) >= 10
+}
+
+func addtoInventory(char *Character, item Item, nb int) {
+    if isInventoryFull(char) {
+        fmt.Println("Inventaire plein ! Impossible d'ajouter un nouvel objet.")
+        return
+    }
+    etat := false
+    for i, r := range char.Inventaire {
+        if r.Nom == item.Nom {
+            char.Inventaire[i].Quantite += nb
+            etat = true
+        }
+    }
+    if !etat {
+        char.Inventaire = append(char.Inventaire, Item{Nom: item.Nom, Quantite: nb})
+    }
+}
+
+// ...existing code...
 func addPV(char *Character, nb int) {
 	char.Stats.PVActuels += nb
 	if char.Stats.PVActuels > char.Stats.PVMax {
