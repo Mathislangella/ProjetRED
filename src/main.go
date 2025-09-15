@@ -123,12 +123,13 @@ func lessPV(char *Character, nb int) {
 }
 func isDead(char *Character) {
 	return
-} 
-//╔══╦══╗
-//║  ║  ║
-//╠══╬══╣
-//║  ║  ║
-//╚══╩══╝
+}
+
+// ╔══╦══╗
+// ║  ║  ║
+// ╠══╬══╣
+// ║  ║  ║
+// ╚══╩══╝
 func Marchand(char *Character) {
 	cmd := exec.Command("clear")
 	cmd.Stdout = os.Stdout
