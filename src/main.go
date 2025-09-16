@@ -149,7 +149,9 @@ func accessInventory(char *Character, marchand *[]Item) {
 	fmt.Println("")
 	fmt.Println("1. Utiliser Potion de Vie")
 	fmt.Println("2. Utiliser Potion de Poison")
-	fmt.Println("3. Aller voir le Marchand")
+	fmt.Println("3.  Utiliser Parchemin d'amélioration d'inventaire")
+	fmt.Println("4. Aller voir le Marchand")
+	fmt.Println("9. Qui sont-ils ?")
 	fmt.Println("0. Quitter Menu")
 	var action string
 	fmt.Scan(&action)
@@ -161,9 +163,14 @@ func accessInventory(char *Character, marchand *[]Item) {
 		poisonPot(char)
 		accessInventory(char, marchand)
 	case "3":
+		upgradeInventorySlot(char)
+		accessInventory(char, marchand)
+	case "4":
 		Marchand(char, marchand)
 		clear()
 		accessInventory(char, marchand)
+	case "9":
+		fmt.Println("Abba & La Chose")
 	case "0":
 		return
 	default:
@@ -207,10 +214,6 @@ func poisonPot(char *Character) {
 	fmt.Println(char.Nom, "N'as pas de Potion de Poison")
 }
 
-func isInventoryFull(char *Character) bool {
-	return len(char.Inventaire) >= char.InventoryMax
-}
-
 func InventoryFull(char *Character, newItem Item) bool {
 	if isInventoryFull(char) {
 		fmt.Println("Inventaire plein ! Voulez-vous remplacer un objet ? (o/n)")
@@ -237,10 +240,21 @@ func InventoryFull(char *Character, newItem Item) bool {
 	return false
 }
 
-func addtoInventory(char *Character, item Item, nb int) {
+func isInventoryFull(char *Character) bool {
+	temp := 0
+	for _, r := range char.Inventaire {
+		temp += r.Quantite
+	}
+	if temp < char.InventoryMax {
+		return false
+	}
+	return true
+}
+
+func addtoInventory(char *Character, item Item, nb int) bool {
 	if isInventoryFull(char) {
 		fmt.Println("Inventaire plein ! Impossible d'ajouter un nouvel objet.")
-		return
+		return false
 	}
 	etat := false
 	for i, r := range char.Inventaire {
@@ -252,6 +266,7 @@ func addtoInventory(char *Character, item Item, nb int) {
 	if !etat {
 		char.Inventaire = append(char.Inventaire, Item{Nom: item.Nom, Quantite: nb})
 	}
+	return true
 }
 
 func addPV(char *Character, nb int) {
@@ -267,6 +282,27 @@ func lessPV(char *Character, nb int) {
 }
 
 func isDead(char *Character) {
+	if char.Stats.PVActuels == 0 {
+		if char.Nb_vie > 0 {
+			fmt.Println("1. Ressurection")
+			fmt.Println("2. Quitter Le Jeu")
+			var choice string
+			fmt.Scan(&choice)
+			switch choice {
+			case "1":
+				addPV(char, char.Stats.PVMax/2)
+				fmt.Printf("%s gagne %d points de vie", char.Nom, char.Stats.PVMax/2)
+				fmt.Printf(": %d/%d", char.Stats.PVActuels, char.Stats.PVMax)
+				char.Nb_vie--
+				return
+			case "2":
+				os.Exit(0)
+			}
+		}
+		if char.Nb_vie == 0 {
+			fmt.Println(char.Nom, "est mort")
+		}
+	}
 	if char.Stats.PVActuels == 0 {
 		if char.Nb_vie > 0 {
 			fmt.Println("1. Ressurection")
@@ -306,24 +342,33 @@ func Marchand(char *Character, shop *[]Item) {
 		fmt.Printf("║%d.    ║%-4d║%-8d║%-38s║\n", i+1, item.Prix, item.Quantite, item.Nom)
 	}
 	fmt.Println("╚══════╩════╩════════╩══════════════════════════════════════╝")
+	fmt.Printf("Il vous reste %-4d\n", char.Argent)
 	fmt.Println("0. Quitter le Marchand")
-	fmt.Print("Marchand : Que voulais vous acheter ? ")
+	fmt.Print("Marchand : Que voulais vous acheter ?   ")
 	var choix string
 	fmt.Scan(&choix)
 	intchoix, err := strconv.Atoi(choix)
-	if err == nil {
+	if err != nil {
 		fmt.Print(err)
 	}
 	if intchoix > 0 && intchoix <= len(*shop) {
-		if (*shop)[intchoix-1].Quantite > 0 {
-			addtoInventory(char, (*shop)[intchoix-1], 1)
-			(*shop)[intchoix-1].Quantite -= 1
-			fmt.Println("Marchand : Merci de votre achat")
-			Marchand(char, shop)
+		if char.Argent >= (*shop)[intchoix-1].Prix {
+			if (*shop)[intchoix-1].Quantite > 0 {
+				if addtoInventory(char, (*shop)[intchoix-1], 1) == true {
+					(*shop)[intchoix-1].Quantite -= 1
+					fmt.Println("Vous venez d'acheter ", (*shop)[intchoix-1].Nom)
+					fmt.Println("Marchand : Merci de votre achat")
+					char.Argent -= (*shop)[intchoix-1].Prix
+				} else {
+					fmt.Println("Marchand : Votre sac a dos est plein ")
+				}
+			} else {
+				fmt.Println("Marchand : Vous ne pouvez pas acheter cet objet car il n y en a plus en stock ")
+			}
 		} else {
-			fmt.Println("Marchand : Vous ne pouvez pas acheter cet objet car soit il n y en a plus en stock soit votre sac a dos est plein")
-			Marchand(char, shop)
+			fmt.Println("Marchand : Vous n'avez pas assez d'or ")
 		}
+		Marchand(char, shop)
 	} else if intchoix == 0 {
 		fmt.Println("Vous quittez la boutique du marchand")
 	} else {
@@ -341,16 +386,39 @@ func clear() {
 	cmd.Run()
 }
 
-//  augmente la limite
+func removeParchemin(char *Character, nom string, quantite int) {
+	for i := 0; i < len(char.Inventaire); i++ {
+		// Vérifie si l'objet est à l'indice i
+		if char.Inventaire[i].Nom == nom {
+			// Réduit la quantité de l'objet
+			char.Inventaire[i].Quantite -= quantite
+			if char.Inventaire[i].Quantite <= 0 {
+				// Supprime l'objet de l'inventaire si la quantité est nulle ou négative
+				char.Inventaire = append(char.Inventaire[:i], char.Inventaire[i+1:]...)
+				return
+			}
+			// Arret de la boucle après avoir trouvé et modifié l'objet
+			break
+		}
+	}
+}
 
+// augmente la limite d'inventaire si le joueur a un parchemin
 func upgradeInventorySlot(char *Character) {
-	if char.Argent >= 30 {
-		char.Argent -= 30
+	found := false
+	for _, item := range char.Inventaire {
+		if item.Nom == "Parchemin d'amélioration d'inventaire" && item.Quantite > 0 {
+			found = true
+			break
+		}
+	}
+	if found {
+		removeParchemin(char, "Parchemin d'amélioration d'inventaire", 1)
 		char.InventoryMax += 5
 		fmt.Printf("Inventaire agrandi à %d emplacements.\n", char.InventoryMax)
 	} else {
-		fmt.Println("Vous n'avez pas assez d'argent pour agrandir votre inventaire.")
-		fmt.Printf("Il vous manque %d pièces d'or.\n", 30-char.Argent)
+		fmt.Println("Vous n'avez pas assez de parchemins pour agrandir votre inventaire.")
+		fmt.Println("Vous pouvez en acheter chez le marchand.")
 	}
 }
 
@@ -418,16 +486,17 @@ func main() {
 	C1 := characterCreation()
 	var Perso *Character = &C1
 	var marchandInventory = []Item{
-		{Nom: "Potion de Vie", Quantite: 1, Prix: 6},
+		{Nom: "Potion de Vie", Quantite: 10, Prix: 6},
 		{Nom: "Potion de poison", Quantite: 10, Prix: 9},
 		{Nom: "Livre de Sort", Quantite: 1, Prix: 25},
-		{Nom: "Fourrure de Loup", Quantite: 1, Prix: 7},
-		{Nom: "Peau de Troll", Quantite: 1, Prix: 10},
-		{Nom: "Cuir de Sanglier", Quantite: 1, Prix: 5},
-		{Nom: "Plume de Corbeau", Quantite: 1, Prix: 3},
+		{Nom: "Fourrure de Loup", Quantite: 10, Prix: 7},
+		{Nom: "Peau de Troll", Quantite: 10, Prix: 10},
+		{Nom: "Cuir de Sanglier", Quantite: 10, Prix: 5},
+		{Nom: "Plume de Corbeau", Quantite: 10, Prix: 3},
 		{Nom: "Parchemin d'amélioration d'inventaire", Quantite: 2, Prix: 40},
 	}
 	var marchandstuf *[]Item = &marchandInventory
 	// lancement du jeu
 	Menu(Perso, marchandstuf)
+	isDead(Perso)
 }
