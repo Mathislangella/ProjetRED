@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-
-
 // Tout les struct
 type statistiques struct {
 	PVActuels int
@@ -22,9 +20,9 @@ type Level struct {
 	Exp int
 }
 type monster struct {
-	Nom       string
-	PVActuels int
-	PVMax     int
+	Nom          string
+	PVActuels    int
+	PVMax        int
 	AttaquePoint int
 }
 
@@ -335,16 +333,20 @@ func Marchand(char *Character, shop *[]Item) {
 	}
 }
 
-func clear() { // réinitialise l'affichage de l'écran
-	cmd := exec.Command("clear") 
-	cmd.Stdout = os.Stdout 
+// réinitialise l'affichage de l'écran
+
+func clear() {
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
 	cmd.Run()
 }
+
+//  augmente la limite
 
 func upgradeInventorySlot(char *Character) {
 	if char.Argent >= 30 {
 		char.Argent -= 30
-		char.InventoryMax += 5 // ← augmente la limite
+		char.InventoryMax += 5
 		fmt.Printf("Inventaire agrandi à %d emplacements.\n", char.InventoryMax)
 	} else {
 		fmt.Println("Vous n'avez pas assez d'argent pour agrandir votre inventaire.")
@@ -354,10 +356,59 @@ func upgradeInventorySlot(char *Character) {
 
 func initGobelin() monster {
 	return monster{
-		Nom:         "Gobelin d'entrainement",
-		PVMax: 40,
-		PVActuels: 40,
+		Nom:          "Gobelin d'entrainement",
+		PVMax:        40,
+		PVActuels:    40,
 		AttaquePoint: 5,
+	}
+}
+
+func gobelinPattern(char *Character, _ *monster) {
+	// Création d'un gobelin d'entraînement avec ses stats de base
+	monstre := initGobelin()
+	tour := 1
+	fmt.Printf("Un %s apparaît !\n", monstre.Nom)
+	// Boucle principale du combat : continue tant que les deux sont vivants
+	for char.Stats.PVActuels > 0 && monstre.PVActuels > 0 {
+		fmt.Printf("\n--- Tour %d ---\n", tour)
+		var degats int
+
+		// Tous les 3 tours, le gobelin se voit doubler ses dégâts ( soit 200% de dégâts )
+		if tour%3 == 0 {
+			degats = monstre.AttaquePoint * 2
+		} else {
+			degats = monstre.AttaquePoint
+		}
+
+		// Affichage de l'attaque et application des dégâts au joueur
+		fmt.Printf("%s inflige à %s %d de dégâts\n", monstre.Nom, char.Nom, degats)
+		char.Stats.PVActuels -= degats
+
+		// Empêche les PV du joueur de devenir négatifs
+		if char.Stats.PVActuels < 0 {
+			char.Stats.PVActuels = 0
+		}
+
+		// Affichage des PV restants pour le joueur et le gobelin
+		fmt.Printf("%s : %d/%d PV\n", char.Nom, char.Stats.PVActuels, char.Stats.PVMax)
+		fmt.Printf("%s : %d/%d PV\n", monstre.Nom, monstre.PVActuels, monstre.PVMax)
+
+		tour++ // Passage au tour suivant
+
+		// vérification de la fin du combat
+		// Si le gobelin est vaincu, le joueur gagne 10 pièces d'or
+		// Si le joueur est KO, il perd une vie
+		if monstre.PVActuels <= 0 {
+			fmt.Printf("%s a été vaincu !\n", monstre.Nom)
+			char.Argent += 10
+			return
+		}
+		if char.Stats.PVActuels <= 0 {
+			char.Stats.PVActuels = 0
+			fmt.Printf("%s est KO !\n", char.Nom)
+			isDead(char)
+			return
+		}
 	}
 }
 
@@ -367,14 +418,14 @@ func main() {
 	C1 := characterCreation()
 	var Perso *Character = &C1
 	var marchandInventory = []Item{
-		{Nom: "Potion de Vie", Quantite: 1, Prix: 3},
-		{Nom: "Potion de poison", Quantite: 10, Prix: 6},
+		{Nom: "Potion de Vie", Quantite: 1, Prix: 6},
+		{Nom: "Potion de poison", Quantite: 10, Prix: 9},
 		{Nom: "Livre de Sort", Quantite: 1, Prix: 25},
-		{Nom: "Fourrure de Loup", Quantite: 1, Prix: 4},
-		{Nom: "Peau de Troll", Quantite: 1, Prix: 7},
-		{Nom: "Cuir de Sanglier", Quantite: 1, Prix: 3},
-		{Nom: "Plume de Corbeau", Quantite: 1, Prix: 1},
-		{Nom: "Parchemin d'amélioration d'inventaire", Quantite: 2, Prix: 30},
+		{Nom: "Fourrure de Loup", Quantite: 1, Prix: 7},
+		{Nom: "Peau de Troll", Quantite: 1, Prix: 10},
+		{Nom: "Cuir de Sanglier", Quantite: 1, Prix: 5},
+		{Nom: "Plume de Corbeau", Quantite: 1, Prix: 3},
+		{Nom: "Parchemin d'amélioration d'inventaire", Quantite: 2, Prix: 40},
 	}
 	var marchandstuf *[]Item = &marchandInventory
 	// lancement du jeu
