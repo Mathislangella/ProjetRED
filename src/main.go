@@ -331,7 +331,7 @@ func Marchand(char *Character, shop *[]Item) {
 }
 
 func arsenal(Char *Character, stuff Item) {
-
+	return
 }
 
 func clear() {
