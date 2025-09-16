@@ -7,6 +7,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // Tout les struct
@@ -51,6 +54,7 @@ type Character struct {
 }
 
 // toute les fonction
+
 
 func initCharacter(nom string, classe string, LvL Level, PVMax int, Nb_vie int, sorts []Skill, inventaire []Item) Character {
 	return Character{
@@ -100,9 +104,44 @@ func characterCreation() Character {
 }
 
 func Menu(char *Character, marchand *[]Item) {
+func characterCreation() Character {
+	clear()
+	fmt.Println("Quel est votre nom :")
+	var nom string
+	fmt.Scan(&nom)
+	nom = strings.ToLower(nom)
+	nom0 := strings.Split(nom, "")
+	nom0[0] = strings.ToUpper((string(nom[0])))
+	nom = strings.Join(nom0, "")
+	fmt.Println("Quel est votre Classe choisissez |1. Humain|2. Elf|3. Nain")
+	var choi string
+	fmt.Scan(&choi)
+	var classe string
+	var pv int
+	switch choi {
+	case "1":
+		classe = "Humain"
+		pv = 100
+	case "2":
+		classe = "Elf"
+		pv = 80
+	case "3":
+		classe = "Nain"
+		pv = 120
+	default:
+		fmt.Printf("Pour choisir votre choisisez 1 ,2 ou 3")
+		clear()
+		characterCreation()
+	}
+	clear()
+	return initCharacter(nom, classe, Level{1, 0}, pv, 1, []Skill{{Nom: "Coup de Poign", Degats: 5, Mana: 0}}, []Item{{Nom: "Potion de Vie", Quantite: 3}})
+}
+
+func Menu(char *Character, marchand *[]Item) {
 	fmt.Println("Menu Du Jeu")
 	fmt.Println("1. Ouvrir Info Personnages")
 	fmt.Println("2. Ouvrir Inventaire")
+	fmt.Println("3. Forgeron")
 	fmt.Println("0. Quitter Menu")
 	fmt.Print("Votre Choix : ")
 	var choice string
@@ -115,6 +154,10 @@ func Menu(char *Character, marchand *[]Item) {
 		clear()
 		accessInventory(char, marchand)
 		clear()
+		Menu(char, marchand)
+	case "3":
+		clear()
+		Forgeron(char)
 		Menu(char, marchand)
 	case "0":
 		return
@@ -275,6 +318,140 @@ func addtoInventory(char *Character, item Item, nb int) bool {
 		char.Inventaire = append(char.Inventaire, Item{Nom: item.Nom, Quantite: nb, Prix: item.Prix})
 	}
 	return true
+}
+
+func poisonPot(char *Character) {
+	for i := range char.Inventaire {
+		if char.Inventaire[i].Nom == "Potion de Poison" && char.Inventaire[i].Quantite > 0 {
+			char.Inventaire[i].Quantite--
+			for range 3 {
+				lessPV(char, 10)
+				fmt.Printf("%s subit du poison ! PV restants : %d/%d\n", char.Nom, char.Stats.PVActuels, char.Stats.PVMax)
+				time.Sleep(1 * time.Second)
+			}
+			if char.Stats.PVActuels <= 0 {
+				char.Stats.PVActuels = 0
+				fmt.Println(char.Nom, "est KO à cause du poison !")
+			}
+			return
+		}
+	}
+	fmt.Println(char.Nom, "N'as pas de Potion de Poison")
+}
+
+func isInventoryFull(char *Character) bool {
+	return len(char.Inventaire) >= 10
+}
+
+func InventoryFull(char *Character, newItem Item) bool {
+	if isInventoryFull(char) {
+		fmt.Println("Inventaire plein ! Voulez-vous remplacer un objet ? (o/n)")
+		var rep string
+		fmt.Scan(&rep)
+		if strings.ToLower(rep) == "o" {
+			fmt.Println("Voici vos objets :")
+			for i, item := range char.Inventaire {
+				fmt.Printf("%d. %s (x%d)\n", i+1, item.Nom, item.Quantite)
+			}
+			fmt.Print("Selectionnez le numéro de l'objet à remplacer : ")
+			var choix string
+			fmt.Scan(&choix)
+			idx, err := strconv.Atoi(choix)
+			if err != nil || idx < 1 || idx > len(char.Inventaire) {
+				fmt.Println("Choix invalide.")
+				return true
+			}
+			char.Inventaire[idx-1] = newItem
+			fmt.Printf("L'objet a été remplacé par %s.\n", newItem.Nom)
+		}
+		return true
+	}
+	return false
+}
+
+func addtoInventory(char *Character, item Item, nb int) {
+	if isInventoryFull(char) {
+		fmt.Println("Inventaire plein ! Impossible d'ajouter un nouvel objet.")
+		return
+	}
+	etat := false
+	for i, r := range char.Inventaire {
+		if r.Nom == item.Nom {
+			char.Inventaire[i].Quantite += nb
+			etat = true
+		}
+	}
+	if !etat {
+		char.Inventaire = append(char.Inventaire, Item{Nom: item.Nom, Quantite: nb})
+	}
+
+}
+
+func poisonPot(char *Character) {
+	for i := range char.Inventaire {
+		if char.Inventaire[i].Nom == "Potion de Poison" && char.Inventaire[i].Quantite > 0 {
+			char.Inventaire[i].Quantite--
+			for range 3 {
+				lessPV(char, 10)
+				fmt.Printf("%s subit du poison ! PV restants : %d/%d\n", char.Nom, char.Stats.PVActuels, char.Stats.PVMax)
+				time.Sleep(1 * time.Second)
+			}
+			if char.Stats.PVActuels <= 0 {
+				char.Stats.PVActuels = 0
+				fmt.Println(char.Nom, "est KO à cause du poison !")
+			}
+			return
+		}
+	}
+	fmt.Println(char.Nom, "N'as pas de Potion de Poison")
+}
+
+func isInventoryFull(char *Character) bool {
+	return len(char.Inventaire) >= 10
+}
+
+func InventoryFull(char *Character, newItem Item) bool {
+	if isInventoryFull(char) {
+		fmt.Println("Inventaire plein ! Voulez-vous remplacer un objet ? (o/n)")
+		var rep string
+		fmt.Scan(&rep)
+		if strings.ToLower(rep) == "o" {
+			fmt.Println("Voici vos objets :")
+			for i, item := range char.Inventaire {
+				fmt.Printf("%d. %s (x%d)\n", i+1, item.Nom, item.Quantite)
+			}
+			fmt.Print("Selectionnez le numéro de l'objet à remplacer : ")
+			var choix string
+			fmt.Scan(&choix)
+			idx, err := strconv.Atoi(choix)
+			if err != nil || idx < 1 || idx > len(char.Inventaire) {
+				fmt.Println("Choix invalide.")
+				return true
+			}
+			char.Inventaire[idx-1] = newItem
+			fmt.Printf("L'objet a été remplacé par %s.\n", newItem.Nom)
+		}
+		return true
+	}
+	return false
+}
+
+func addtoInventory(char *Character, item Item, nb int) {
+	if isInventoryFull(char) {
+		fmt.Println("Inventaire plein ! Impossible d'ajouter un nouvel objet.")
+		return
+	}
+	etat := false
+	for i, r := range char.Inventaire {
+		if r.Nom == item.Nom {
+			char.Inventaire[i].Quantite += nb
+			etat = true
+		}
+	}
+	if !etat {
+		char.Inventaire = append(char.Inventaire, Item{Nom: item.Nom, Quantite: nb})
+	}
+
 }
 
 func addPV(char *Character, nb int) {
@@ -488,11 +665,156 @@ func gobelinPattern(char *Character, _ *monster) {
 			return
 		}
 	}
+	intchoix, err := strconv.Atoi(choix)
+	if err == nil {
+		fmt.Print(err)
+	}
+	if intchoix > 0 && intchoix <= len(*shop) {
+		if (*shop)[intchoix-1].Quantite > 0 {
+			addtoInventory(char, (*shop)[intchoix-1], 1)
+			(*shop)[intchoix-1].Quantite -= 1
+			fmt.Println("Marchand : Merci de votre achat")
+			Marchand(char, shop)
+		} else {
+			fmt.Println("Marchand : Vous ne pouvez pas acheter cet objet car soit il n y en a plus en stock soit votre sac a dos est plein")
+			Marchand(char, shop)
+		}
+	} else if intchoix == 0 {
+		fmt.Println("Vous quittez la boutique du marchand")
+	} else {
+		fmt.Println("Mauvais Choix")
+		fmt.Println("")
+		Marchand(char, shop)
+	}
+}
+
+func ForgeEquipment(char *Character, nom string) {
+	if char.Argent < 5 {
+		fmt.Println(char.Nom, "N'as pas assez pieces d'or")
+		return
+	}
+	char.Argent -= 5
+	addtoInventory(char, Item{Nom: nom, Quantite: 1}, 1)
+	fmt.Printf("%s a fabrique %v, il vous reste %d pieces d'or \n", char.Nom, nom, char.Argent)
+
+}
+
+func Forgeron(char *Character) {
+	fmt.Println("Bienvenue chez le Forgeron !")
+	fmt.Println("Voici la liste des equipements a fabriquer :")
+	fmt.Println("1. Chapeau de l'aventurier (5 pieces d'or)")
+	fmt.Println("2. Tunique de l'aventurier (5 pieces d'or)")
+	fmt.Println("3. Bottes de l'aventurier (5 pieces d'or)")
+	fmt.Println("0. Quitter le Forgeron")
+	fmt.Print("Votre choix : ")
+	var choix string
+	fmt.Scan(&choix)
+	switch choix {
+	case "1":
+		material_1 := "Plume de Corbeau"
+		material_2 := "Cuir de Sanglier"
+		var T1 string
+		var T2 string
+		for x := range char.Inventaire {
+			if char.Inventaire[x].Nom == material_1 && char.Inventaire[x].Quantite >= 1 {
+				T1 = material_1
+				char.Inventaire[x].Quantite--
+			}
+			if char.Inventaire[x].Nom == material_2 && char.Inventaire[x].Quantite >= 1 {
+				T2 = material_2
+				char.Inventaire[x].Quantite--
+			}
+		}
+		if T1 == material_1 && T2 == material_2 {
+			fmt.Println("Est-ce que vous-voulez fabriquer un Chapeau de l'aventurier ? (oui/non) ")
+			var choice string
+			fmt.Scan(&choice)
+			if choice == "oui" {
+				ForgeEquipment(char, "Chapeau de l'aventurier")
+			} else if choice == "non" {
+				Forgeron(char)
+				addtoInventory(char, Item{Nom: material_1, Quantite: 1}, 1)
+				addtoInventory(char, Item{Nom: material_2, Quantite: 1}, 1)
+			}
+		} else {
+			fmt.Println("Vous avez pas assez de materiaux")
+		}
+	case "2":
+		material_2 := "Peau de Troll"
+		material_1 := "Fourrure de Loup"
+		var T1 string
+		var T2 string
+		for x := range char.Inventaire {
+			if char.Inventaire[x].Nom == material_1 && char.Inventaire[x].Quantite >= 2 {
+				T1 = material_1
+				char.Inventaire[x].Quantite--
+			}
+			if char.Inventaire[x].Nom == material_2 && char.Inventaire[x].Quantite >= 1 {
+				T2 = material_2
+				char.Inventaire[x].Quantite--
+			}
+		}
+		if T1 == material_1 && T2 == material_2 {
+			fmt.Println("Est-ce que vous-voulez fabriquer un Chapeau de l'aventurier ? (oui/non) ")
+			var choice string
+			fmt.Scan(&choice)
+			if choice == "oui" {
+				ForgeEquipment(char, "Tunique de l'aventurier")
+			} else if choice == "non" {
+				Forgeron(char)
+				addtoInventory(char, Item{Nom: material_2, Quantite: 1}, 1)
+				addtoInventory(char, Item{Nom: material_1, Quantite: 2}, 1)
+
+			}
+		} else {
+			fmt.Println("Vous avez pas assez de materiaux")
+		}
+	case "3":
+		material_1 := "Cuir de Sanglier"
+		material_2 := "Fourrure de Loup"
+		var T1 string
+		var T2 string
+		for x := range char.Inventaire {
+			if char.Inventaire[x].Nom == material_1 && char.Inventaire[x].Quantite >= 1 {
+				T1 = material_1
+				char.Inventaire[x].Quantite--
+			}
+			if char.Inventaire[x].Nom == material_2 && char.Inventaire[x].Quantite >= 1 {
+				T2 = material_2
+				char.Inventaire[x].Quantite--
+			}
+		}
+		if T1 == material_1 && T2 == material_2 {
+			fmt.Println("Est-ce que vous-voulez fabriquer un Chapeau de l'aventurier ? (oui/non) ")
+			var choice string
+			fmt.Scan(&choice)
+			if choice == "oui" {
+				ForgeEquipment(char, "Bottes de l'aventurier")
+			} else if choice == "non" {
+				Forgeron(char)
+				addtoInventory(char, Item{Nom: material_1, Quantite: 1}, 1)
+				addtoInventory(char, Item{Nom: material_2, Quantite: 1}, 1)
+			}
+		} else {
+			fmt.Println("Vous avez pas assez de materiaux")
+		}
+	case "0":
+		return
+	default:
+		Forgeron(char)
+	}
+}
+
+func clear() {
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }
 
 // Fonction Main
 func main() {
 	// Initialisation des personnages
+	C1 := characterCreation()
 	C1 := characterCreation()
 	var Perso *Character = &C1
 	displayInfo(Perso)
