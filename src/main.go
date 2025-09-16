@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+
+
 // Tout les struct
 type statistiques struct {
 	PVActuels int
@@ -18,6 +20,12 @@ type statistiques struct {
 type Level struct {
 	Lvl int
 	Exp int
+}
+type monster struct {
+	Nom       string
+	PVActuels int
+	PVMax     int
+	AttaquePoint int
 }
 
 type Item struct {
@@ -327,20 +335,29 @@ func Marchand(char *Character, shop *[]Item) {
 	}
 }
 
-func clear() {
-	cmd := exec.Command("clear")
-	cmd.Stdout = os.Stdout
+func clear() { // réinitialise l'affichage de l'écran
+	cmd := exec.Command("clear") 
+	cmd.Stdout = os.Stdout 
 	cmd.Run()
 }
 
 func upgradeInventorySlot(char *Character) {
-	if char.Argent >= 20 {
-		char.Argent -= 20
+	if char.Argent >= 30 {
+		char.Argent -= 30
 		char.InventoryMax += 5 // ← augmente la limite
 		fmt.Printf("Inventaire agrandi à %d emplacements.\n", char.InventoryMax)
 	} else {
 		fmt.Println("Vous n'avez pas assez d'argent pour agrandir votre inventaire.")
-		fmt.Printf("Il vous manque %d pièces d'or.\n", 20-char.Argent)
+		fmt.Printf("Il vous manque %d pièces d'or.\n", 30-char.Argent)
+	}
+}
+
+func initGobelin() monster {
+	return monster{
+		Nom:         "Gobelin d'entrainement",
+		PVMax: 40,
+		PVActuels: 40,
+		AttaquePoint: 5,
 	}
 }
 
@@ -357,6 +374,7 @@ func main() {
 		{Nom: "Peau de Troll", Quantite: 1, Prix: 7},
 		{Nom: "Cuir de Sanglier", Quantite: 1, Prix: 3},
 		{Nom: "Plume de Corbeau", Quantite: 1, Prix: 1},
+		{Nom: "Parchemin d'amélioration d'inventaire", Quantite: 2, Prix: 30},
 	}
 	var marchandstuf *[]Item = &marchandInventory
 	// lancement du jeu
