@@ -510,4 +510,5 @@ func main() {
 	// lancement du jeu
 	Menu(Perso, marchandstuf)
 	isDead(Perso)
+	gobelinPattern(Perso, nil)
 }
