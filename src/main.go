@@ -33,28 +33,30 @@ type Skill struct {
 }
 
 type Character struct {
-	Nom        string
-	Classe     string
-	Niveau     Level
-	Stats      statistiques
-	Nb_vie     int
-	Sorts      []Skill
-	Inventaire []Item
-	Argent     int
+	Nom          string
+	Classe       string
+	Niveau       Level
+	Stats        statistiques
+	Nb_vie       int
+	Sorts        []Skill
+	Inventaire   []Item
+	InventoryMax int
+	Argent       int
 }
 
 // toute les fonction
 
 func initCharacter(nom string, classe string, LvL Level, PVMax int, Nb_vie int, sorts []Skill, inventaire []Item) Character {
 	return Character{
-		Nom:        nom,
-		Classe:     classe,
-		Niveau:     LvL,
-		Stats:      statistiques{PVActuels: PVMax / 2, PVMax: PVMax},
-		Nb_vie:     Nb_vie,
-		Sorts:      sorts,
-		Inventaire: inventaire,
-		Argent:     100,
+		Nom:          nom,
+		Classe:       classe,
+		Niveau:       LvL,
+		Stats:        statistiques{PVActuels: PVMax / 2, PVMax: PVMax},
+		Nb_vie:       Nb_vie,
+		Sorts:        sorts,
+		Inventaire:   inventaire,
+		InventoryMax: 10,
+		Argent:       100,
 	}
 }
 
@@ -200,13 +202,20 @@ func poisonPot(char *Character) {
 }
 
 func isInventoryFull(char *Character) bool {
-	return len(char.Inventaire) >= 10
+	temp := 0
+	for _, r := range char.Inventaire {
+		temp += r.Quantite
+	}
+	if temp < char.InventoryMax {
+		return false
+	}
+	return true
 }
 
-func addtoInventory(char *Character, item Item, nb int) {
+func addtoInventory(char *Character, item Item, nb int) bool {
 	if isInventoryFull(char) {
 		fmt.Println("Inventaire plein ! Impossible d'ajouter un nouvel objet.")
-		return
+		return false
 	}
 	etat := false
 	for i, r := range char.Inventaire {
@@ -218,6 +227,7 @@ func addtoInventory(char *Character, item Item, nb int) {
 	if !etat {
 		char.Inventaire = append(char.Inventaire, Item{Nom: item.Nom, Quantite: nb})
 	}
+	return true
 }
 
 func addPV(char *Character, nb int) {
@@ -270,24 +280,32 @@ func Marchand(char *Character, shop *[]Item) {
 		fmt.Printf("║%d.    ║%-4d║%-8d║%-38s║\n", i+1, item.Prix, item.Quantite, item.Nom)
 	}
 	fmt.Println("╚══════╩════╩════════╩══════════════════════════════════════╝")
+	fmt.Printf("Il vous reste %-4d\n", char.Argent)
 	fmt.Println("0. Quitter le Marchand")
-	fmt.Print("Marchand : Que voulais vous acheter ? ")
+	fmt.Print("Marchand : Que voulais vous acheter ?   ")
 	var choix string
 	fmt.Scan(&choix)
 	intchoix, err := strconv.Atoi(choix)
-	if err == nil {
+	if err != nil {
 		fmt.Print(err)
 	}
 	if intchoix > 0 && intchoix <= len(*shop) {
-		if (*shop)[intchoix-1].Quantite > 0 {
-			addtoInventory(char, (*shop)[intchoix-1], 1)
-			(*shop)[intchoix-1].Quantite -= 1
-			fmt.Println("Marchand : Merci de votre achat")
-			Marchand(char, shop)
+		if char.Argent >= (*shop)[intchoix-1].Prix {
+			if (*shop)[intchoix-1].Quantite > 0 {
+				if addtoInventory(char, (*shop)[intchoix-1], 1) == true {
+					(*shop)[intchoix-1].Quantite -= 1
+					fmt.Println("Marchand : Merci de votre achat")
+					char.Argent -= (*shop)[intchoix-1].Prix
+				} else {
+					fmt.Println("Marchand : Votre sac a dos est plein ")
+				}
+			} else {
+				fmt.Println("Marchand : Vous ne pouvez pas acheter cet objet car il n y en a plus en stock ")
+			}
 		} else {
-			fmt.Println("Marchand : Vous ne pouvez pas acheter cet objet car soit il n y en a plus en stock soit votre sac a dos est plein")
-			Marchand(char, shop)
+			fmt.Println("Marchand : Vous n'avez pas assez d'or ")
 		}
+		Marchand(char, shop)
 	} else if intchoix == 0 {
 		fmt.Println("Vous quittez la boutique du marchand")
 	} else {
@@ -309,13 +327,13 @@ func main() {
 	C1 := characterCreation()
 	var Perso *Character = &C1
 	var marchandInventory = []Item{
-		{Nom: "Potion de Vie", Quantite: 1, Prix: 3},
-		{Nom: "Potion de poison", Quantite: 1, Prix: 6},
+		{Nom: "Potion de Vie", Quantite: 10, Prix: 3},
+		{Nom: "Potion de poison", Quantite: 10, Prix: 6},
 		{Nom: "Livre de Sort", Quantite: 1, Prix: 25},
-		{Nom: "Fourrure de Loup", Quantite: 1, Prix: 4},
-		{Nom: "Peau de Troll", Quantite: 1, Prix: 7},
-		{Nom: "Cuir de Sanglier", Quantite: 1, Prix: 3},
-		{Nom: "Plume de Corbeau", Quantite: 1, Prix: 1},
+		{Nom: "Fourrure de Loup", Quantite: 2, Prix: 4},
+		{Nom: "Peau de Troll", Quantite: 2, Prix: 7},
+		{Nom: "Cuir de Sanglier", Quantite: 2, Prix: 3},
+		{Nom: "Plume de Corbeau", Quantite: 2, Prix: 1},
 	}
 	var marchandstuf *[]Item = &marchandInventory
 	// lancement du jeu
