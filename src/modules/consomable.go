@@ -1,16 +1,9 @@
-package src
+package modules
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
-	"strconv"
-	"strings"
 	"time"
-	"main"
 )
-
-
 
 func takePot(char *Character) {
 	for i := range char.Inventaire {
@@ -48,6 +41,7 @@ func poisonPot(char *Character) {
 	}
 	fmt.Println(char.Nom, "N'as pas de Potion de poison")
 }
+
 // augmente la limite d'inventaire si le joueur a un parchemin
 func upgradeInventorySlot(char *Character) {
 	found := false
