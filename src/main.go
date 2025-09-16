@@ -20,10 +20,17 @@ type Level struct {
 	Exp int
 }
 
+type Bonus struct { // exmple {4, "force"}
+	nb    int
+	Stats string
+}
+
 type Item struct {
+	Type     string // Equipement / Consomable
 	Nom      string
 	Quantite int
 	Prix     int
+	Boost    Bonus
 }
 
 type Skill struct {
@@ -42,6 +49,13 @@ type Character struct {
 	Inventaire   []Item
 	InventoryMax int
 	Argent       int
+	Stuff        Equipenment
+}
+
+type Equipenment struct {
+	emplacement_tete  Item
+	emplacement_torce Item
+	emplacement_pied  Item
 }
 
 // toute les fonction
@@ -239,6 +253,7 @@ func addPV(char *Character, nb int) {
 
 func lessPV(char *Character, nb int) {
 	char.Stats.PVActuels -= nb
+	isDead(char)
 }
 func isDead(char *Character) {
 	if char.Stats.PVActuels == 0 {
@@ -315,6 +330,10 @@ func Marchand(char *Character, shop *[]Item) {
 	}
 }
 
+func arsenal(Char *Character, stuff Item) {
+
+}
+
 func clear() {
 	cmd := exec.Command("clear")
 	cmd.Stdout = os.Stdout
@@ -338,5 +357,4 @@ func main() {
 	var marchandstuf *[]Item = &marchandInventory
 	// lancement du jeu
 	Menu(Perso, marchandstuf)
-	isDead(Perso)
 }
