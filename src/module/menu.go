@@ -11,6 +11,7 @@ func Menu(char *Character, marchand *[]Item) {
 	fmt.Println("1. Ouvrir Info Personnages")
 	fmt.Println("2. Ouvrir Inventaire")
 	fmt.Println("3. Forgeron")
+	fmt.Println("4. Marchand")
 	fmt.Println("0. Quitter Menu")
 	fmt.Print("Votre Choix : ")
 	var choice string
@@ -27,6 +28,10 @@ func Menu(char *Character, marchand *[]Item) {
 	case "3":
 		Clear()
 		Forgeron(char)
+		Menu(char, marchand)
+	case "4":
+		Clear()
+		Marchand(char, marchand)
 		Menu(char, marchand)
 	case "0":
 		return
