@@ -21,6 +21,7 @@ func main() {
 	}
 	var marchandstuf *[]module.Item = &marchandInventory
 	module.Menu(Perso, marchandstuf)
+
 }
 
 // liste des fonction :
