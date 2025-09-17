@@ -26,17 +26,44 @@ func GobelinPattern(char *Character, monstre *Monster, tour int) {
 
 }
 
-func charaterTurn(char *Character, monstre *Monster) {
-	return
+func charaterTurn(char *Character, monstre *Monster, tour int) {
+	fmt.Printf("\n--- Tour %d ---\n", tour)
+	fmt.Println("Votre choix (1-4): ")
+	fmt.Println("1. Attaquer")
+	fmt.Println("2. Inventaire")
+	fmt.Println("3. Sorts")
+	fmt.Println("4. Fuir le Combat")
+	var choice string
+	fmt.Scan(&choice)
+	switch choice {
+	case "1":
+		var degats int
+		degats = 5
+		fmt.Printf("%s inflige à %s %d de dégâts\n", char.Nom, monstre.Nom, degats)
+		monstre.ressources.PVActuels -= degats
+		if monstre.ressources.PVActuels < 0 {
+			monstre.ressources.PVActuels = 0
+		}
+	case "2":
+		Clear()
+		AccessInventory(char, nil)
+		charaterTurn(char, monstre, tour)
+	case "3":
+		fmt.Println("Vous fuyez le combat !")
+		Menu(char, nil)
+	default:
+		fmt.Println("Mauvais Choix")
+		charaterTurn(char, monstre, tour)
+	}
 }
 
-func trainingFight(char *Character, monstre Monster) {
+func trainingFight(char *Character, monstre *Monster) {
 	fmt.Printf("Un %s apparaît !\n", monstre.Nom)
 	tour := 1
 	for monstre.ressources.PVActuels > 0 && char.Ressources.PVActuels > 0 {
 		fmt.Printf("%s : %d/%d PV\n", char.Nom, char.Ressources.PVActuels, char.Ressources.PVMax)
 		fmt.Printf("%s : %d/%d PV\n", monstre.Nom, monstre.ressources.PVActuels, monstre.ressources.PVMax)
-		charaterTurn(char, &monstre)
+		charaterTurn(char, monstre, tour)
 		if monstre.ressources.PVActuels <= 0 {
 			fmt.Printf("%s a été vaincu !\n", monstre.Nom)
 			char.Argent += 10
@@ -48,7 +75,7 @@ func trainingFight(char *Character, monstre Monster) {
 			IsDead(char)
 			return
 		}
-		GobelinPattern(char, &monstre, tour)
+		GobelinPattern(char, monstre, tour)
 		tour++
 	}
 }

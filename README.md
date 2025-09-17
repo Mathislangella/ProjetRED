@@ -12,7 +12,6 @@ src/
 		character.go        # Création/affichage personnage, vie
 		inventory.go        # Inventaire + menu d'inventaire
 		inventory_extra.go  # Consommables, équipement
-		inventory_patch.go  # Helpers inventaire
 		utils.go            # Utilitaires (Clear)
 		commerce.go         # Marchand et Forgeron (achat/fabrication)
 		menu.go             # Menu principal (déplacé depuis main)
