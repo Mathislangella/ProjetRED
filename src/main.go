@@ -22,18 +22,3 @@ func main() {
 	var marchandstuf *[]module.Item = &marchandInventory
 	module.Menu(Perso, marchandstuf)
 }
-
-// liste des fonction :
-// , , gobelinPattern, initgobelin,removeParchemin, isDead, addPV,
-// d, removeParchemin,  lessPV,
-// DisplayInfo, Menu,
-//
-//
-// main :
-// special : Clear
-// inventaire :isInventoryFull, addtoInventory, UpgradeInventorySlot, accessInventory, inventoryfull,
-// liste de consomable : takePot
-// character : InitCharacter, characterCreation
-// access_jeu :
-// vendeur.go : Forgeron, ForgeEquipment , Marchand
-//

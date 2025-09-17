@@ -9,12 +9,12 @@ import (
 func TakePot(char *Character) {
 	for i := 0; i < len(char.Inventaire); i++ {
 		if char.Inventaire[i].Nom == "Potion de Vie" && char.Inventaire[i].Quantite > 0 {
-			if char.Stats.PVActuels < char.Stats.PVMax {
+			if char.Ressources.PVActuels < char.Ressources.PVMax {
 				char.Inventaire[i].Quantite--
 				AddPV(char, 50)
-				fmt.Println(char.Nom, "gagne 50 points de vie ! (PV:", char.Stats.PVActuels, "/", char.Stats.PVMax, ")")
-			} else if char.Stats.PVActuels == char.Stats.PVMax {
-				fmt.Println(char.Nom, "est déja en très bonne santé ! (PV:", char.Stats.PVMax, "/", char.Stats.PVMax, ")")
+				fmt.Println(char.Nom, "gagne 50 points de vie ! (PV:", char.Ressources.PVActuels, "/", char.Ressources.PVMax, ")")
+			} else if char.Ressources.PVActuels == char.Ressources.PVMax {
+				fmt.Println(char.Nom, "est déja en très bonne santé ! (PV:", char.Ressources.PVMax, "/", char.Ressources.PVMax, ")")
 				fmt.Println("Vous ne pouvez pas utiliser cette potion.")
 			}
 			if char.Inventaire[i].Quantite <= 0 {
@@ -32,12 +32,12 @@ func PoisonPot(char *Character) {
 		if char.Inventaire[i].Nom == "Potion de poison" && char.Inventaire[i].Quantite > 0 {
 			char.Inventaire[i].Quantite--
 			for range 3 {
-				char.Stats.PVActuels -= 10
-				fmt.Printf("%s subit du poison ! PV restants : %d/%d.\n", char.Nom, char.Stats.PVActuels, char.Stats.PVMax)
+				char.Ressources.PVActuels -= 10
+				fmt.Printf("%s subit du poison ! PV restants : %d/%d.\n", char.Nom, char.Ressources.PVActuels, char.Ressources.PVMax)
 				time.Sleep(1 * time.Second)
 			}
-			if char.Stats.PVActuels <= 0 {
-				char.Stats.PVActuels = 0
+			if char.Ressources.PVActuels <= 0 {
+				char.Ressources.PVActuels = 0
 				fmt.Println(char.Nom, "est KO à cause du poison !")
 			}
 			if char.Inventaire[i].Quantite <= 0 {
@@ -125,7 +125,7 @@ func EquiperObjet(char *Character, nom string) {
 		}
 		char.Equipement.Pieds = nom
 	}
-	char.Stats.PVMax -= oldBonus
+	char.Ressources.PVMax -= oldBonus
 
 	for i, item := range char.Inventaire {
 		if item.Nom == nom && item.Quantite > 0 {
@@ -150,6 +150,6 @@ func EquiperObjet(char *Character, nom string) {
 			char.Inventaire = append(char.Inventaire, Item{Nom: oldEquip, Quantite: 1})
 		}
 	}
-	char.Stats.PVMax += bonus
-	fmt.Printf("%s equipe ! PV Max : %d\n", nom, char.Stats.PVMax)
+	char.Ressources.PVMax += bonus
+	fmt.Printf("%s equipe ! PV Max : %d\n", nom, char.Ressources.PVMax)
 }

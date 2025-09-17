@@ -2,20 +2,31 @@ package module
 
 // Statistiques du personnage
 type Statistiques struct {
-	PVActuels int
-	PVMax     int
+	Initiative   int //vitesse d'attaque(qui joue en premier)
+	Force        int //degats au corps a corps
+	Intelligence int //degats magique
+	Agilite      int //chance d'esquive
+	Chance       int //chance de coup critique
+}
+
+type Ressources struct {
+	PVActuels   int //pv actuel
+	PVMax       int //pv maximum
+	ManaActuels int //mana actuel
+	ManaMax     int //mana maximum
+	Nb_vie      int //nombre de vie
 }
 
 type Level struct {
-	Lvl int
-	Exp int
+	Lvl     int //lv actuel
+	Exp_Cap int //exp necessaire pour lv up
+	Exp     int //exp actuel
 }
 
 type Monster struct {
 	Nom          string
-	PVActuels    int
-	PVMax        int
-	AttaquePoint int
+	statistiques Statistiques
+	ressources   Ressources
 }
 
 type Item struct {
@@ -41,7 +52,7 @@ type Character struct {
 	Classe       string
 	Niveau       Level
 	Stats        Statistiques
-	Nb_vie       int
+	Ressources   Ressources
 	Sorts        []Skill
 	Inventaire   []Item
 	InventoryMax int
