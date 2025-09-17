@@ -44,7 +44,7 @@ func CharacterCreation() Character {
 		classe = "Nain"
 		pv = 120
 	default:
-		fmt.Printf("Pour choisir votre choisisez 1 ,2 ou 3")
+		fmt.Printf("Pour choisir votre classe choisisez 1 ,2 ou 3 \n")
 		CharacterCreation()
 	}
 	return InitCharacter(nom, classe, Level{1, 0}, pv, 1, []Skill{{Nom: "Coup de Poign", Degats: 5, Mana: 0}}, []Item{{Nom: "Potion de Vie", Quantite: 3}})
@@ -83,16 +83,17 @@ func AddPV(char *Character, nb int) {
 
 func DisplayInfo(char *Character) {
 	Clear()
-	fmt.Println("╔══════════════════╗")
-	fmt.Printf("║ Nom    : %-8s║\n", char.Nom)
-	fmt.Printf("║ Classe : %-8s║ \n", char.Classe)
-	fmt.Printf("║ Niveau : %-8d║\n", char.Niveau.Lvl)
-	fmt.Printf("║ Exp    : %-8d║\n", char.Niveau.Exp)
-	fmt.Printf("║ PV     :  %d/%-4d║\n", char.Stats.PVActuels, char.Stats.PVMax)
-	fmt.Printf("║ OR     : %-8d║\n", char.Argent)
-	fmt.Println("║------------------ Equipement ------------------║")
-	fmt.Printf("║ Tete  : %-25s\n", char.Equipement.Tete)
-	fmt.Printf("║ Torse : %-25s\n", char.Equipement.Torse)
-	fmt.Printf("║ Pieds : %-25s\n", char.Equipement.Pieds)
-	fmt.Println("╚════════════════════════════════════════════════╝")
+	fmt.Printf("               ╔══════════════════╗\n")
+	fmt.Printf("               ║ Nom    : %-8s║\n", char.Nom)
+	fmt.Printf("               ║ Classe : %-8s║ \n", char.Classe)
+	fmt.Printf("               ║ Niveau : %-8d║\n", char.Niveau.Lvl)
+	fmt.Printf("               ║ Exp    : %-8d║\n", char.Niveau.Exp)
+	fmt.Printf("               ║ PV     :  %d/%-4d║\n", char.Stats.PVActuels, char.Stats.PVMax)
+	fmt.Printf("               ║ OR     : %-8d║\n", char.Argent)
+	fmt.Printf("╔══════════════╩══════════════════╩══════════════╗\n")
+	fmt.Printf("║------------------ Equipement ------------------║\n")
+	fmt.Printf("║ Tete   : %-38s║\n", char.Equipement.Tete)
+	fmt.Printf("║ Torse  : %-38s║\n", char.Equipement.Torse)
+	fmt.Printf("║ Pieds  : %-38s║\n", char.Equipement.Pieds)
+	fmt.Printf("╚════════════════════════════════════════════════╝\n")
 }
