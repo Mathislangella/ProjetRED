@@ -33,6 +33,8 @@ type Item struct {
 	Nom      string
 	Quantite int
 	Prix     int
+	slot     string
+	bonus    int
 }
 
 type Skill struct {

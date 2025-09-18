@@ -8,16 +8,15 @@ import (
 // Marchand regroupe la logique du marchand
 func Marchand(char *Character, shop *[]Item) {
 	Clear()
-	fmt.Println("Marchand : Bienvenu dans ma boutique.")
-	fmt.Println("")
-	fmt.Println("╔══════╦════╦════════╦══════════════════════════════════════╗")
-	fmt.Println("║index ║Prix║Quantite║Object                                ║")
-	fmt.Println("╠══════╬════╬════════╬══════════════════════════════════════╣")
+	fmt.Printf("Marchand : Bienvenu dans ma boutique.\n\n")
+	fmt.Printf("╔══════╦════╦════════╦══════════════════════════════════════╗\n")
+	fmt.Printf("║index ║" + Jaune + "Prix" + reset + "║Quantite║Object                                ║\n")
+	fmt.Printf("╠══════╬════╬════════╬══════════════════════════════════════╣\n")
 	for i, item := range *shop {
-		fmt.Printf("║%d.    ║%-4d║%-8d║%-38s║\n", i+1, item.Prix, item.Quantite, item.Nom)
+		fmt.Printf("║%-6d║"+Jaune+"%-4d"+reset+"║%-8d║%-38s║\n", i+1, item.Prix, item.Quantite, item.Nom)
 	}
-	fmt.Println("╚══════╩════╩════════╩══════════════════════════════════════╝")
-	fmt.Printf("Il vous reste %-4d pièce d'or\n", char.Argent)
+	fmt.Printf("╚══════╩════╩════════╩══════════════════════════════════════╝\n")
+	fmt.Printf("Il vous reste"+Jaune+" %-4d pièce d'or"+reset+"\n", char.Argent)
 	fmt.Println("0. Quitter le Marchand")
 	fmt.Print("Marchand : Que voulais vous acheter ?   ")
 	var choix string

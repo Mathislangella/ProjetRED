@@ -84,51 +84,49 @@ func UpgradeInventorySlot(char *Character) {
 }
 
 // Exported version of EquiperObjet
-func EquiperObjet(char *Character, nom string) {
-	var slot string
-	var bonus int
+func EquiperObjet(char *Character, objet Item) {
 	var oldEquip string
 	var oldBonus int
 
-	switch nom {
+	switch objet.Nom {
 	case "Chapeau de l'aventurier":
-		slot = "Tete"
-		bonus = 10
+		objet.slot = "Tete"
+		objet.bonus = 10
 	case "Tunique de l'aventurier":
-		slot = "Torse"
-		bonus = 25
+		objet.slot = "Torse"
+		objet.bonus = 25
 	case "Bottes de l'aventurier":
-		slot = "Pieds"
-		bonus = 15
+		objet.slot = "Pieds"
+		objet.bonus = 15
 	default:
 		fmt.Println("Vous pouvez pas equiper cet objet")
 		return
 	}
 
-	switch slot {
+	switch objet.slot {
 	case "Tete":
 		oldEquip = char.Equipement.Tete
 		if oldEquip == "Chapeau de l'aventurier" {
 			oldBonus = 10
 		}
-		char.Equipement.Tete = nom
+		char.Equipement.Tete = objet.Nom
 	case "Torse":
 		oldEquip = char.Equipement.Torse
 		if oldEquip == "Tunique de l'aventurier" {
 			oldBonus = 25
 		}
-		char.Equipement.Torse = nom
+		char.Equipement.Torse = objet.Nom
 	case "Pieds":
 		oldEquip = char.Equipement.Pieds
 		if oldEquip == "Bottes de l'aventurier" {
 			oldBonus = 15
 		}
-		char.Equipement.Pieds = nom
+		char.Equipement.Pieds = objet.Nom
 	}
 	char.Ressources.PVMax -= oldBonus
 
 	for i, item := range char.Inventaire {
-		if item.Nom == nom && item.Quantite > 0 {
+		if item.Nom == objet.Nom && item.Quantite > 0 {
 			char.Inventaire[i].Quantite--
 			if char.Inventaire[i].Quantite <= 0 {
 				char.Inventaire = append(char.Inventaire[:i], char.Inventaire[i+1:]...)
@@ -150,6 +148,6 @@ func EquiperObjet(char *Character, nom string) {
 			char.Inventaire = append(char.Inventaire, Item{Nom: oldEquip, Quantite: 1})
 		}
 	}
-	char.Ressources.PVMax += bonus
-	fmt.Printf("%s equipe ! PV Max : %d\n", nom, char.Ressources.PVMax)
+	char.Ressources.PVMax += objet.bonus
+	fmt.Printf("%s equipe ! PV Max : %d\n", objet.Nom, char.Ressources.PVMax)
 }

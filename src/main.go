@@ -7,8 +7,7 @@ import (
 
 func main() {
 	C1 := module.CharacterCreation()
-	var Perso *module.Character = &C1
-	fmt.Printf("Nom: %s\n", Perso.Nom)
+	fmt.Printf("Nom: %s\n", C1.Nom)
 	var marchandInventory = []module.Item{
 		{Nom: "Potion de Vie", Quantite: 10, Prix: 6},
 		{Nom: "Potion de poison", Quantite: 10, Prix: 9},
@@ -19,7 +18,6 @@ func main() {
 		{Nom: "Plume de Corbeau", Quantite: 10, Prix: 3},
 		{Nom: "Parchemin d'amélioration d'inventaire", Quantite: 2, Prix: 40},
 	}
-	var marchandstuf *[]module.Item = &marchandInventory
-	module.Menu(Perso, marchandstuf)
+	module.Menu(&C1, &marchandInventory)
 
 }
