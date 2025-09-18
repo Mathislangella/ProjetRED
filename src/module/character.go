@@ -28,7 +28,7 @@ func CharacterCreation() Character {
 	nom0 := strings.Split(nom, "")
 	nom0[0] = strings.ToUpper((string(nom[0])))
 	nom = strings.Join(nom0, "")
-	fmt.Println("Choisissez est votre Classe . |1. Humain|2. Elf|3. Nain")
+	fmt.Println("Choisissez votre Classe :")
 	fmt.Printf("1. %sHumain (Equilibre)%s            | %sPV:100%s | %sMana:50%s | %sForce:10%s | %sIntelligence:10%s | %sAgilite:10%s | %sChance:10%s | %sInitiative:10%s |\n",
 		Cyan, reset, Vert, reset, Cyan, reset, Rouge, reset, Magenta, reset, Jaune, reset, Bleu, reset, Gris, reset)
 
