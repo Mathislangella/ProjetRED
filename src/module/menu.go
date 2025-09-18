@@ -12,6 +12,7 @@ func Menu(char *Character, marchand *[]Item) {
 	fmt.Println("2. Ouvrir Inventaire")
 	fmt.Println("3. Forgeron")
 	fmt.Println("4. Marchand")
+	fmt.Println("5. Entraînement")
 	fmt.Println("0. Quitter Menu")
 	fmt.Print("Votre Choix : ")
 	var choice string
@@ -32,6 +33,11 @@ func Menu(char *Character, marchand *[]Item) {
 	case "4":
 		Clear()
 		Marchand(char, marchand)
+		Menu(char, marchand)
+	case "5":
+		Clear()
+		goblin := InitGobelin()
+		trainingFight(char, &goblin)
 		Menu(char, marchand)
 	case "0":
 		return
