@@ -2,6 +2,7 @@ package module
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"os/exec"
 )
@@ -12,8 +13,24 @@ func Clear() {
 	cmd.Run()
 }
 
-func zebi(c *Character) {
-	fmt.Printf("%s: Zebi !!!!", c.Nom)
+func addXP(c *Character, xp int) {
+	c.Niveau.Exp += xp
+	fmt.Printf("%s gagne %d XP !\n", c.Nom, xp)
+	c.Niveau.Exp_Cap = int(math.Pow(float64(c.Niveau.Lvl)*10, 1.5))
+	if c.Niveau.Exp >= c.Niveau.Exp_Cap {
+		c.Niveau.Lvl++
+		c.Niveau.Exp -= c.Niveau.Exp_Cap
+		c.Stats.Force += 2
+		c.Stats.Intelligence += 2
+		c.Stats.Agilite += 2
+		c.Stats.Chance += 1
+		c.Stats.Initiative += 1
+		c.Ressources.PVMax += 10
+		c.Ressources.ManaMax += 5
+		c.Ressources.PVActuels = c.Ressources.PVMax
+		c.Ressources.ManaActuels = c.Ressources.ManaMax
+		fmt.Printf("%s passe au niveau %d !\n", c.Nom, c.Niveau)
+	}
 }
 
 const (

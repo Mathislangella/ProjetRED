@@ -62,12 +62,13 @@ func InventoryFull(char *Character, newItem Item) bool {
 func AccessInventory(char *Character, marchand *[]Item) {
 	fmt.Println("\t\t  \t  INVENTAIRES")
 	fmt.Printf("Vous avez %d Pieces d'or\n", char.Argent)
+	fmt.Printf("╔═════╦════════╦══════════════════════════════════════╗\n")
+	fmt.Printf("║index║Quantite║Object                                ║\n")
+	fmt.Printf("╠═════╬════════╬══════════════════════════════════════╣\n")
 	for i, item := range char.Inventaire {
-		fmt.Printf("║%-4d : ", i)
-		fmt.Printf("%d %-10s ,", item.Quantite, item.Nom)
-		fmt.Println("║")
+		fmt.Printf("║%-5d║%-8d║%-38s║\n", i, item.Quantite, item.Nom)
 	}
-	fmt.Println("")
+	fmt.Printf("╚═════╩════════╩══════════════════════════════════════╝\n")
 	fmt.Println("1. Utiliser Potion de Vie")
 	fmt.Println("2. Utiliser Potion de poison")
 	fmt.Println("3. Utiliser Parchemin d'amélioration d'inventaire")
@@ -112,7 +113,7 @@ func AccessInventory(char *Character, marchand *[]Item) {
 			return
 		}
 		index := equippable[choix-1]
-		EquiperObjet(char, char.Inventaire[index].Nom)
+		EquiperObjet(char, char.Inventaire[index])
 		AccessInventory(char, marchand)
 	case "9":
 		fmt.Println("Abba & La Chose")

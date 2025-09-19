@@ -7,13 +7,14 @@ import (
 // Menu principal du jeu
 // Affiche les options et redirige vers les écrans dédiés
 func Menu(char *Character, marchand *[]Item) {
-	fmt.Println("Menu Du Jeu")
-	fmt.Println("1. Ouvrir Info Personnages")
-	fmt.Println("2. Ouvrir Inventaire")
-	fmt.Println("3. Forgeron")
-	fmt.Println("4. Marchand")
-	fmt.Println("0. Quitter Menu")
-	fmt.Print("Votre Choix : ")
+	fmt.Printf("Menu Du Jeu\n")
+	fmt.Printf("1. Ouvrir Info Personnages\n")
+	fmt.Printf("2. Ouvrir Inventaire\n")
+	fmt.Printf("3. Forgeron\n")
+	fmt.Printf("4. Marchand\n")
+	fmt.Printf("5. Combat d'entrainement\n")
+	fmt.Printf("0. Quitter Menu\n")
+	fmt.Printf("Votre choix (0-5): ")
 	var choice string
 	fmt.Scan(&choice)
 	switch choice {

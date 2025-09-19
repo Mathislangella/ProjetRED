@@ -21,13 +21,14 @@ func InitCharacter(nom string, classe string, LvL Level, stat Statistiques, ress
 }
 
 func CharacterCreation() Character {
-	fmt.Println("Quel est votre nom :")
+	fmt.Print("Quel est votre nom :")
 	var nom string
 	fmt.Scan(&nom)
 	nom = strings.ToLower(nom)
 	nom0 := strings.Split(nom, "")
 	nom0[0] = strings.ToUpper((string(nom[0])))
 	nom = strings.Join(nom0, "")
+	fmt.Println("Choisissez votre Classe :")
 	fmt.Printf("1. %sHumain (Equilibre)%s            | %sPV:100%s | %sMana:50%s | %sForce:10%s | %sIntelligence:10%s | %sAgilite:10%s | %sChance:10%s | %sInitiative:10%s |\n",
 		Cyan, reset, Vert, reset, Cyan, reset, Rouge, reset, Magenta, reset, Jaune, reset, Bleu, reset, Gris, reset)
 
@@ -37,6 +38,7 @@ func CharacterCreation() Character {
 	fmt.Printf("3. %sNain   (Resistant et Fort)%s    | %sPV:120%s | %sMana:30%s | %sForce:12%s | %sIntelligence:8%s  | %sAgilite:8%s  | %sChance:7%s  | %sInitiative:8%s  |\n",
 		Rouge, reset, Vert, reset, Cyan, reset, Rouge, reset, Magenta, reset, Jaune, reset, Bleu, reset, Gris, reset)
 
+	fmt.Print("Votre choix (1-3): ")
 	var choi string
 	fmt.Scan(&choi)
 	var classe string

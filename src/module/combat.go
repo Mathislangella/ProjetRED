@@ -28,11 +28,11 @@ func GobelinPattern(char *Character, monstre *Monster, tour int) {
 
 func charaterTurn(char *Character, monstre *Monster, tour int) {
 	fmt.Printf("\n--- Tour %d ---\n", tour)
-	fmt.Println("Votre choix (1-4): ")
 	fmt.Println("1. Attaquer")
 	fmt.Println("2. Inventaire")
 	fmt.Println("3. Sorts")
 	fmt.Println("4. Fuir le Combat")
+	fmt.Println("Votre choix (1-4): ")
 	var choice string
 	fmt.Scan(&choice)
 	switch choice {
@@ -41,6 +41,9 @@ func charaterTurn(char *Character, monstre *Monster, tour int) {
 		degats = 5
 		fmt.Printf("%s inflige à %s %d de dégâts\n", char.Nom, monstre.Nom, degats)
 		monstre.ressources.PVActuels -= degats
+		if monstre.ressources.PVActuels < (monstre.ressources.PVMax/2) && monstre.ressources.PVActuels > 0 {
+			fmt.Printf("%s Zebi !!! Je suis blesser !\n", monstre.Nom)
+		}
 		if monstre.ressources.PVActuels < 0 {
 			monstre.ressources.PVActuels = 0
 		}
@@ -67,6 +70,8 @@ func trainingFight(char *Character, monstre *Monster) {
 		if monstre.ressources.PVActuels <= 0 {
 			fmt.Printf("%s a été vaincu !\n", monstre.Nom)
 			char.Argent += 10
+			fmt.Printf("%s gagne 10 pièces d'or et 10 xp!\n", char.Nom)
+			addXP(char, 10)
 			return
 		}
 		if char.Ressources.PVActuels <= 0 {
