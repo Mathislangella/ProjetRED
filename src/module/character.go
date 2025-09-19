@@ -28,7 +28,15 @@ func CharacterCreation() Character {
 	nom0 := strings.Split(nom, "")
 	nom0[0] = strings.ToUpper((string(nom[0])))
 	nom = strings.Join(nom0, "")
-	fmt.Println("Quel est votre Classe choisissez |1. Humain|2. Elf|3. Nain")
+	fmt.Printf("1. %sHumain (Equilibre)%s            | %sPV:100%s | %sMana:50%s | %sForce:10%s | %sIntelligence:10%s | %sAgilite:10%s | %sChance:10%s | %sInitiative:10%s |\n",
+		Cyan, reset, Vert, reset, Cyan, reset, Rouge, reset, Magenta, reset, Jaune, reset, Bleu, reset, Gris, reset)
+
+	fmt.Printf("2. %sElf    (Agile et Intelligent)%s | %sPV:80%s  | %sMana:80%s | %sForce:8%s  | %sIntelligence:12%s | %sAgilite:12%s | %sChance:13%s | %sInitiative:15%s |\n",
+		Vert, reset, Vert, reset, Cyan, reset, Rouge, reset, Magenta, reset, Jaune, reset, Bleu, reset, Gris, reset)
+
+	fmt.Printf("3. %sNain   (Resistant et Fort)%s    | %sPV:120%s | %sMana:30%s | %sForce:12%s | %sIntelligence:8%s  | %sAgilite:8%s  | %sChance:7%s  | %sInitiative:8%s  |\n",
+		Rouge, reset, Vert, reset, Cyan, reset, Rouge, reset, Magenta, reset, Jaune, reset, Bleu, reset, Gris, reset)
+
 	var choi string
 	fmt.Scan(&choi)
 	var classe string

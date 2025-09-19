@@ -33,6 +33,10 @@ func Menu(char *Character, marchand *[]Item) {
 		Clear()
 		Marchand(char, marchand)
 		Menu(char, marchand)
+	case "5":
+		Monster := InitGobelin()
+		trainingFight(char, &Monster)
+		Menu(char, marchand)
 	case "0":
 		return
 	default:
