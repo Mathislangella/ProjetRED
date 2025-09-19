@@ -70,8 +70,9 @@ func AccessInventory(char *Character, marchand *[]Item) {
 	fmt.Println("")
 	fmt.Println("1. Utiliser Potion de Vie")
 	fmt.Println("2. Utiliser Potion de poison")
-	fmt.Println("3. Utiliser Parchemin d'amélioration d'inventaire")
-	fmt.Println("4. Equiper un equipement")
+	fmt.Println("3. Apprendre un Sort")
+	fmt.Println("4. Utiliser Parchemin d'amélioration d'inventaire")
+	fmt.Println("5. Equiper un equipement")
 	fmt.Println("9. Qui sont-ils ?")
 	fmt.Println("0. Quitter Menu")
 	var action string
@@ -84,9 +85,12 @@ func AccessInventory(char *Character, marchand *[]Item) {
 		PoisonPot(char)
 		AccessInventory(char, marchand)
 	case "3":
-		UpgradeInventorySlot(char)
+		spellKeep(char)
 		AccessInventory(char, marchand)
 	case "4":
+		UpgradeInventorySlot(char)
+		AccessInventory(char, marchand)
+	case "5":
 		equippable_Names := []string{"Chapeau de l'aventurier", "Tunique de l'aventurier", "Bottes de l'aventurier"}
 		var equippable []int
 		fmt.Println("Equipments que vous pouvez equiper :")
