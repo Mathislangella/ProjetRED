@@ -11,7 +11,7 @@ func main() {
 	var marchandInventory = []module.Item{
 		{Nom: "Potion de Vie", Quantite: 10, Prix: 6},
 		{Nom: "Potion de poison", Quantite: 10, Prix: 9},
-		{Nom: "Livre de Sort", Quantite: 1, Prix: 25},
+		{Nom: "Livre de Sort: Boule de Feu", Quantite: 1, Prix: 25},
 		{Nom: "Fourrure de Loup", Quantite: 10, Prix: 7},
 		{Nom: "Peau de Troll", Quantite: 10, Prix: 10},
 		{Nom: "Cuir de Sanglier", Quantite: 10, Prix: 5},
